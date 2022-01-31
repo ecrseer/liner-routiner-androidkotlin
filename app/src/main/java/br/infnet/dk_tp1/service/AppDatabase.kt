@@ -12,6 +12,7 @@ abstract class AppDatabase : RoomDatabase(){
 
     abstract fun getHorarioAndTarefaDAO(): DaoHorarioAndTarefa
     abstract fun getHorarioDAO(): DaoHorario
+    abstract fun getTarefaDAO(): DaoTarefa
 
     companion object {
         //Singleton

@@ -10,7 +10,11 @@ data class Tarefa(
     val nome:String,
     val descricao:String,
     val horarioId:Long,
-)
+){
+    fun cloneComIdDiferente(horaIdNovo:Long): Tarefa {
+        return Tarefa(this.idTarefa,this.nome,this.descricao,horaIdNovo)
+    }
+}
 
 @Entity
 data class Horario(

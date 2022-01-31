@@ -35,7 +35,7 @@ class SliderAdapter(
 
     private fun tarefaPelaPosicao(position: Int): Fragment {
         val frag = TarefaFragment()
-        frag.arguments = bundleOf("posicaoTarefaSelecionada" to position)
+        frag.arguments = bundleOf("posicaoTarefa" to position)
         return frag;
     }
 
