@@ -4,8 +4,12 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.text.format.DateFormat
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -22,114 +26,123 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import br.infnet.dk_tp1.LinerRoutinerApplication
-import br.infnet.dk_tp1.R
 import br.infnet.dk_tp1.databinding.MainFragmentBinding
-import br.infnet.dk_tp1.domain.Horario
 import br.infnet.dk_tp1.service.HorarioAndTarefaRepository
 import androidx.lifecycle.Observer
+import br.infnet.dk_tp1.ui.dialogs.MeuDatePickerDialog
+import kotlinx.coroutines.coroutineScope
+import java.io.File
 import java.util.*
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     companion object {
         fun newInstance() = MainFragment()
     }
+
     private var _binding: MainFragmentBinding? = null
-    private val binding get()= _binding!!
+    private val binding get() = _binding!!
     //private lateinit var viewModel: MainViewModel
 
 
-    inner class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener {
-
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val c = Calendar.getInstance()
-            val hour = c.get(Calendar.HOUR_OF_DAY)
-            val minute = c.get(Calendar.MINUTE)
-            val is24 = DateFormat.is24HourFormat(activity)
-
-            return TimePickerDialog(activity, this, hour, minute,is24 )
-        }
-
-        override fun onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int) {
-
-            val sp = activity?.getPreferences(Context.MODE_PRIVATE)
-            val dataMili=sp?.getLong("dataDeletarRotinas",0)
-            with (sp?.edit()){
-                //this?.putLong("dataDeletarRotinas",hourOfDay,minute)
-            }
-
-            onDestroy()
-        }
-    }
-    inner class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener {
-
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            // Use the current time as the default values for the picker
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
-
-            // Create a new instance of TimePickerDialog and return it
-            return DatePickerDialog(requireActivity(), this, year, month, day)
-        }
-
-        override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-            val sp = activity?.getPreferences(Context.MODE_PRIVATE)
-
-            with (sp?.edit()){
-                //this?.putLong("dataDeletarRotinas",hourOfDay,minute)
-            }
-            onDestroy()
-        }
-    }
-
-    inner class MainViewModelFactory (private val repository: HorarioAndTarefaRepository ): ViewModelProvider.Factory {
+    inner class MainViewModelFactory(private val repository: HorarioAndTarefaRepository) :
+        ViewModelProvider.Factory {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            if(modelClass.isAssignableFrom(MainViewModel::class.java)){
+            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
                 return MainViewModel(repository) as T;
             }
             throw IllegalArgumentException(" ViewModel instanciando errado")
         }
     }
-    private val viewModel:MainViewModel by activityViewModels {
+
+    private val viewModel: MainViewModel by activityViewModels {
         MainViewModelFactory(
             (requireActivity().application as LinerRoutinerApplication).horarioAndTarefaRepository
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun escutarSwitchRotinaTemporaria() {
+        binding.rotinaTempSwitch.setOnCheckedChangeListener { buttonView, isChecked: Boolean ->
+            var dataSelecionada: Date
+            if (isChecked) {
+                val setDataSelecionada = { ano: Int, mes: Int, dia: Int ->
+                    var data = Date(ano, mes, dia)
+                    dataSelecionada = data
+                }
+                MeuDatePickerDialog(setDataSelecionada).show(childFragmentManager, "datadata")
 
-        val ingr = Calendar.getInstance().timeInMillis;
+            } else {
+                val thisPreferences = activity?.getPreferences(Context.MODE_PRIVATE)
+                with(thisPreferences?.edit()) {
+                    this?.putString("remover_em", "");
+                }
 
-        binding.rotinaTempSwitch.setOnCheckedChangeListener { buttonView, isChecked:Boolean ->
-            if(isChecked){
-                //todo data
-                DatePickerFragment().show(childFragmentManager,"deletar em")
-            }else{
 
             }
         }
-        viewModel.horarios.observe(viewLifecycleOwner,  Observer{
-            it?.let{
-               if(it.size==0){ viewModel.popularHorarios() }
+    }
 
-            }
+    fun openDirectory(pickerInitialUri: Uri) {
+        val rcode = 32
+        // Choose a directory using the system's file picker.
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+            // Optionally, specify a URI for the directory that should be opened in
+            // the system file picker when it loads.
+            putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+        }
 
-        })
-        viewModel.horarioAndTarefas.observe(viewLifecycleOwner,Observer{
-            it?.let{
-                val d = it
-            }
-        })
+        startActivityForResult(intent, rcode)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val now = Calendar.getInstance().timeInMillis;
+
+        binding.btnGravar.setOnClickListener {
+            val external = requireContext().getExternalFilesDir(null)
+            val ms = MediaStore.ACTION_IMAGE_CAPTURE
+            //openDirectory(external)
+            /*requireContext()?.openFileOutput("my_routine ${now}.txt", Context.MODE_PRIVATE)
+                    .use {
+                        var bigtxt = "$now\n"
+                        it.write(bigtxt.toByteArray())
+
+                        viewModel.horarioAndTarefas.value?.forEach {
+                            val temTarefa = it.tarefa
+                            temTarefa?.let{tarefa ->
+                                bigtxt+= "${tarefa.nome}, ${tarefa.descricao}\n"
+                            }
+                        }
+                        it.write(bigtxt.toString().toByteArray())
+                    }
+                requireContext()?.getExternalFilesDir(null)?.let {
+                    val f = File(it, "my_routine ${now}")
+
+                    //viewModel.recordFile(f)
+
+
+                }*/
+
+
+        }
+
+
+
         setupViewPagerComSeekbar()
+        escutarSwitchRotinaTemporaria()
+        deletaRotinaSeTemporaria()
+    }
+
+    private fun deletaRotinaSeTemporaria() {
+        //val txt = requireContext().openFileInput("remover_em").bufferedReader().readText()
+
     }
 
     private fun setupViewPagerComSeekbar() {
 
-        with (binding.seekBar as SeekBar){
-            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+        with(binding.seekBar as SeekBar) {
+            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
@@ -141,29 +154,20 @@ class MainFragment : Fragment() {
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
                     //TODO("Not yet implemented")
                 }
+
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
                     //TODO("Not yet implemented")
                 }
 
             })
         }
-        fun sincronizaHorarioTxt(position:Int){
-            viewModel.horarioAndTarefas?.value?.let{
-                it?.get(position)?.let{
-                    val horaInicio = "${it.horario.inicio}:00"
-                    val horaFim = "${it.horario.fim}:00"
 
-                    binding.horaSelecionada.setText(horaInicio)
-                    binding.txtHoraFim.setText(horaFim)
+        with(binding.viewpgr as ViewPager2) {
+            viewModel.tarefas.observe(viewLifecycleOwner, Observer {
+                it?.size?.let {
+                    adapter = SliderAdapter(childFragmentManager, lifecycle, it)
                 }
-            }
-        }
-        with(binding.viewpgr as ViewPager2){
-
-            viewModel?.tarefas?.value?.size?.let{
-                adapter=SliderAdapter(childFragmentManager,lifecycle,it)
-            }
-
+            })
             this.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
@@ -175,12 +179,40 @@ class MainFragment : Fragment() {
         }
     }
 
+    private fun sincronizaHorarioTxt(position: Int) {
+        viewModel.horarioAndTarefas?.value?.let {
+            it?.get(position)?.let {
+                val horaInicio = "${it.horario.inicio}:00"
+                val horaFim = "${it.horario.fim}:00"
+
+                binding.horaSelecionada.setText(horaInicio)
+                binding.txtHoraFim.setText(horaFim)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.horarioAndTarefas.observe(viewLifecycleOwner, Observer {
+            sincronizaHorarioTxt(0)
+        })
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
-        _binding = MainFragmentBinding.inflate(inflater,container,false)
+        _binding = MainFragmentBinding.inflate(inflater, container, false)
+
+        viewModel.horarios.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if (it.size == 0) {
+                    //viewModel.popularHorarios()
+                }
+            }
+        })
         //viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         val viw = binding.root
         return viw
@@ -210,7 +242,13 @@ class MainFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding=null
+        _binding = null
+    }
+
+
+    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        //TODO("Not yet implemented")
+        val yea = year
     }
 
 }

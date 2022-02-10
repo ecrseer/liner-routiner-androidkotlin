@@ -74,7 +74,8 @@ class TarefaFragment : Fragment() {
 
         binding.fabSalvarTarefa.setOnClickListener {
             binding.txtTitulo?.text?.toString()?.let{
-                viewModel.editarTarefa(it)
+                //viewModel.editarTarefa(it)
+                viewModel.editarTarefaAsync(it)
             }
         }
 
@@ -85,6 +86,11 @@ class TarefaFragment : Fragment() {
         setupViewModel()
         viewModel.tarefa.observe(viewLifecycleOwner, Observer {
             binding.txtTitulo.setText(it.nome)
+        })
+        viewModel.status.observe(viewLifecycleOwner, Observer {
+            it?.let{
+                println("--> $it")
+            }
         })
     }
 

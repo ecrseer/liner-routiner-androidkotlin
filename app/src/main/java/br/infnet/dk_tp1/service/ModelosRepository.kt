@@ -25,6 +25,9 @@ class HorarioAndTarefaRepository(
     fun getAllHorariosLiveData(): Flow<List<Horario>> {
         return daoHorario.listar()
     }
+    fun getAllTarefasLiveData():Flow<List<Tarefa>>{
+        return daoTarefa.listar()
+    }
     fun getTodosHorariosAndTarefasLiveData():Flow<List<HorarioAndTarefa>>{
         return daoHorarioTarefa.getHorariosAndTarefas()
     }
@@ -34,7 +37,7 @@ class HorarioAndTarefaRepository(
 class TarefaRepository(
     private val daoTarefa:DaoTarefa
 ) {
-    suspend fun modificarTarefa(tarefa:Tarefa): Int {
+      fun modificarTarefa(tarefa:Tarefa): Int {
         return daoTarefa.editar(tarefa)
     }
     suspend fun getTarefaById(id:Long): Tarefa {

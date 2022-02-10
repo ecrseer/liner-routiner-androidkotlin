@@ -32,5 +32,8 @@ interface DaoTarefa {
     suspend fun inserir(tarefa: Tarefa): Long
 
     @Update
-    suspend fun editar(tarefa: Tarefa):Int
+      fun editar(tarefa: Tarefa):Int
+
+    @Query("SELECT * FROM tarefa")
+    fun listar(): Flow<List<Tarefa>>
 }
