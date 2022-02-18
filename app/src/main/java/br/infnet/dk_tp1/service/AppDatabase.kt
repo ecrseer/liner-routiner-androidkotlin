@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import br.infnet.dk_tp1.domain.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
@@ -27,46 +28,56 @@ abstract class AppDatabase : RoomDatabase(){
     abstract fun getTarefaDAO(): DaoTarefa
 
     companion object {
-        //Singleton
+        //@Singleton
         @Volatile
         private var INSTANCE: AppDatabase? = null
-        fun getInstance(context:Context,scope:CoroutineScope):AppDatabase=
-            INSTANCE?: synchronized(this){
-                INSTANCE?: getDatabase(context,scope).also{ INSTANCE = it}
-            }
+
 
         fun getDatabase(context:Context,scope: CoroutineScope):AppDatabase{
-            val instance = Room.databaseBuilder(context.applicationContext,
-                AppDatabase::class.java,"db_tarefahorario.db")
-                .fallbackToDestructiveMigration()
-                .addCallback(object : RoomDatabase.Callback() {
-                    override fun onCreate(db: SupportSQLiteDatabase) {
-                        super.onCreate(db)
-                        scope.launch {
-                            for(horario in PopulateDatabase.CONST_HORARIOS){
-                                getInstance(context, scope).getHorarioDAO()
-                                    .inserir(horario)
-                            }
-                            for(tarefa in PopulateDatabase.CONST_TAREFAS){
-                                getInstance(context,scope).getTarefaDAO()
-                                    .inserir(tarefa)
-                            }
-                        }
-                        //getInstance(context).getHora
-                        /*
+            return INSTANCE ?: synchronized(this){
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java, "db_tarefahorario.db"
+                )
+                    .fallbackToDestructiveMigration()
+                    .addCallback(AppHorarioTarefaDatabaseCallback(scope)).build()
+                INSTANCE = instance;
 
-                        trainDB.stationDao().insert(...)
+                return instance
 
-
-                        */
-
+            }
+        }
+        private class AppHorarioTarefaDatabaseCallback(
+            private val scope: CoroutineScope
+        ) : RoomDatabase.Callback() {
+            /**
+             * Override the onCreate method to populate the database.
+             */
+            override fun onCreate(db: SupportSQLiteDatabase) {
+                super.onCreate(db)
+                // If you want to keep the data through app restarts,
+                // comment out the following line.
+                INSTANCE?.let { database ->
+                    scope.launch(Dispatchers.IO) {
+                        populateDatabase(database.getHorarioDAO(),
+                            database.getTarefaDAO())
                     }
-                })
-                //.addCallback()
-                .build()
-            INSTANCE = instance;
+                }
+            }
+        }
 
-            return instance
+        /**
+         * Populate the database in a new coroutine.
+         * If you want to start with more words, just add them.
+         */
+        suspend fun populateDatabase(horarioDAO: DaoHorario,tarefaDAO:DaoTarefa) {
+            for(horario in PopulateDatabase.CONST_HORARIOS){
+                horarioDAO.inserir(horario)
+            }
+            for(tarefa in PopulateDatabase.CONST_TAREFAS){
+                tarefaDAO.inserir(tarefa)
+            }
+
         }
     }
 

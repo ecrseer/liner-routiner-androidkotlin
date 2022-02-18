@@ -40,7 +40,7 @@ class TarefaFragment : Fragment() {
             if(modelClass.isAssignableFrom(TarefaViewModel::class.java)){
                 return TarefaViewModel(repository,idTarefa) as T;
             }
-            throw IllegalArgumentException(" ViewModel instanciando errado")
+            throw IllegalArgumentException(" TarefaViewModel instanciando errado")
         }
     }
 
@@ -49,7 +49,17 @@ class TarefaFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = TarefaFragmentBinding.inflate(inflater,container,false)
-
+        setupViewModel()
+        viewModel.tarefa.observe(viewLifecycleOwner, Observer {
+            it?.let{
+                binding.txtTitulo.setText(it.nome)
+            }
+        })
+        viewModel.status.observe(viewLifecycleOwner, Observer {
+            it?.let{
+                println("--> $it")
+            }
+        })
         val viw = binding.root
         return viw
     }
@@ -61,11 +71,7 @@ class TarefaFragment : Fragment() {
             val supostoId:Long = posicao+1
             val factory = TarefaViewModelFactory(linerApp.tarefaRepository,supostoId)
             viewModel = ViewModelProvider(this,factory).get(TarefaViewModel::class.java)
-            viewModel.posicaoId.observe(viewLifecycleOwner,Observer{
-                it?.let{
 
-                }
-            })
         }
     }
 
@@ -75,23 +81,11 @@ class TarefaFragment : Fragment() {
         binding.fabSalvarTarefa.setOnClickListener {
             binding.txtTitulo?.text?.toString()?.let{
                 //viewModel.editarTarefa(it)
-                viewModel.editarTarefaAsync(it)
+                viewModel.editarTarefa(it)
             }
         }
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        setupViewModel()
-        viewModel.tarefa.observe(viewLifecycleOwner, Observer {
-            binding.txtTitulo.setText(it.nome)
-        })
-        viewModel.status.observe(viewLifecycleOwner, Observer {
-            it?.let{
-                println("--> $it")
-            }
-        })
-    }
 
 }

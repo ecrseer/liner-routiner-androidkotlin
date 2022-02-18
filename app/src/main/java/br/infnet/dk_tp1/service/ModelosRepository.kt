@@ -37,7 +37,7 @@ class HorarioAndTarefaRepository(
 class TarefaRepository(
     private val daoTarefa:DaoTarefa
 ) {
-      fun modificarTarefa(tarefa:Tarefa): Int {
+    suspend fun modificarTarefa(tarefa:Tarefa): Int {
         return daoTarefa.editar(tarefa)
     }
     suspend fun getTarefaById(id:Long): Tarefa {

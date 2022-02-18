@@ -7,6 +7,7 @@ import br.infnet.dk_tp1.domain.Tarefa
 import br.infnet.dk_tp1.service.HorarioAndTarefaRepository
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileOutputStream
 
 class MainViewModel
     (private val horarioAndTarefaRepository: HorarioAndTarefaRepository) : ViewModel() {
@@ -18,18 +19,25 @@ class MainViewModel
     val horarioAndTarefas: LiveData<List<HorarioAndTarefa>> =
         horarioAndTarefaRepository.getTodosHorariosAndTarefasLiveData().asLiveData()
 
-    val microTarefas = MutableLiveData<List<Tarefa>>(
-        mutableListOf(
-            Tarefa(1, "comer", "", 1),
-            Tarefa(2, "beber", "", 2)
-        )
-    )
 
-    fun recordFile(file: File) {
+
+    fun gravarRotinasEmArquivo(arquivo: File) {
         viewModelScope.launch {
-
-            file.createNewFile()
-
+            val stream = FileOutputStream(arquivo)
+            var rotinaTxt = "exemplo"
+            horarioAndTarefas.value?.forEach {
+                val temTarefa = it.tarefa
+                rotinaTxt+= """
+                    -------------------\n
+                    Horario ${it.horario.inicio}:00 as ${it.horario.fim}:00 
+                    
+                """.trimIndent()
+                temTarefa?.let{tarefa ->
+                    rotinaTxt+= "${tarefa.nome}, ${tarefa.descricao}\n"
+                }
+            }
+            stream.write(rotinaTxt.toByteArray())
+            stream.close()
         }
 
     }

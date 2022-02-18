@@ -9,13 +9,16 @@ import kotlinx.coroutines.launch
 class TarefaViewModel(private val tarefaRepository: TarefaRepository,private val idTarefa:Long) : ViewModel() {
     // TODO: Implement the ViewModel
 
-    val posicaoId = MutableLiveData<Long>().apply{ value = idTarefa}
-      var tarefa:LiveData<Tarefa> =  Transformations.switchMap(posicaoId) {
-              id:Long ->
-                tarefaRepository.getTarefaByIdLiveData(id) }
+      var tarefa:LiveData<Tarefa> = tarefaRepository.getTarefaByIdLiveData(idTarefa)
             //tarefa.postValue(tarefaRepository.getTarefaById(idTarefa))
     val status=MutableLiveData<String>().apply{value=""}
 
+    val microTarefas = MutableLiveData<List<Tarefa>>(
+        mutableListOf(
+            Tarefa(1, "comer", "", 1),
+            Tarefa(2, "beber", "", 2)
+        )
+    )
 
     fun editarTarefa(novoTitulo:String){
         tarefa.value?.let{
@@ -25,21 +28,6 @@ class TarefaViewModel(private val tarefaRepository: TarefaRepository,private val
                 val idMod = tarefaRepository.modificarTarefa(clone)
                 val d = idMod
             }
-        }
-    }
-    fun editarTarefaAsync(novoTitulo:String){
-        tarefa.value?.let{
-            var clone = Tarefa(it.idTarefa,novoTitulo,it.descricao,it.horarioId)
-
-
-            val modificar =   {
-                val idMod = tarefaRepository.modificarTarefa(clone)
-                status.postValue("$idMod")
-
-              }
-
-            MeuAsyncTasker (modificar).execute()
-
         }
     }
 

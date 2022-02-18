@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.format.DateFormat
@@ -32,6 +33,7 @@ import androidx.lifecycle.Observer
 import br.infnet.dk_tp1.ui.dialogs.MeuDatePickerDialog
 import kotlinx.coroutines.coroutineScope
 import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 
 class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
@@ -69,6 +71,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                     var data = Date(ano, mes, dia)
                     dataSelecionada = data
                 }
+                //tododata
                 MeuDatePickerDialog(setDataSelecionada).show(childFragmentManager, "datadata")
 
             } else {
@@ -100,30 +103,9 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val now = Calendar.getInstance().timeInMillis;
 
         binding.btnGravar.setOnClickListener {
-            val external = requireContext().getExternalFilesDir(null)
-            val ms = MediaStore.ACTION_IMAGE_CAPTURE
-            //openDirectory(external)
-            /*requireContext()?.openFileOutput("my_routine ${now}.txt", Context.MODE_PRIVATE)
-                    .use {
-                        var bigtxt = "$now\n"
-                        it.write(bigtxt.toByteArray())
-
-                        viewModel.horarioAndTarefas.value?.forEach {
-                            val temTarefa = it.tarefa
-                            temTarefa?.let{tarefa ->
-                                bigtxt+= "${tarefa.nome}, ${tarefa.descricao}\n"
-                            }
-                        }
-                        it.write(bigtxt.toString().toByteArray())
-                    }
-                requireContext()?.getExternalFilesDir(null)?.let {
-                    val f = File(it, "my_routine ${now}")
-
-                    //viewModel.recordFile(f)
-
-
-                }*/
-
+            val arquivo = File(requireContext()
+                .getExternalFilesDir(Environment.DIRECTORY_DCIM),"rotina.txt" )
+            viewModel.gravarRotinasEmArquivo(arquivo)
 
         }
 
@@ -181,12 +163,14 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
     private fun sincronizaHorarioTxt(position: Int) {
         viewModel.horarioAndTarefas?.value?.let {
-            it?.get(position)?.let {
-                val horaInicio = "${it.horario.inicio}:00"
-                val horaFim = "${it.horario.fim}:00"
+            if (it?.size > 0) {
+                it.get(position)?.let {
+                    val horaInicio = "${it.horario.inicio}:00"
+                    val horaFim = "${it.horario.fim}:00"
 
-                binding.horaSelecionada.setText(horaInicio)
-                binding.txtHoraFim.setText(horaFim)
+                    binding.horaSelecionada.setText(horaInicio)
+                    binding.txtHoraFim.setText(horaFim)
+                }
             }
         }
     }
@@ -194,7 +178,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     override fun onResume() {
         super.onResume()
         viewModel.horarioAndTarefas.observe(viewLifecycleOwner, Observer {
-            sincronizaHorarioTxt(0)
+             sincronizaHorarioTxt(0)
         })
 
     }
@@ -249,6 +233,30 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         //TODO("Not yet implemented")
         val yea = year
+    }
+    private fun record(){
+
+        //openDirectory(external)
+        /*requireContext()?.openFileOutput("my_routine ${now}.txt", Context.MODE_PRIVATE)
+                .use {
+                    var bigtxt = "$now\n"
+                    it.write(bigtxt.toByteArray())
+
+                    viewModel.horarioAndTarefas.value?.forEach {
+                        val temTarefa = it.tarefa
+                        temTarefa?.let{tarefa ->
+                            bigtxt+= "${tarefa.nome}, ${tarefa.descricao}\n"
+                        }
+                    }
+                    it.write(bigtxt.toString().toByteArray())
+                }
+            requireContext()?.getExternalFilesDir(null)?.let {
+                val f = File(it, "my_routine ${now}")
+
+                //viewModel.recordFile(f)
+
+
+            }*/
     }
 
 }

@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DaoHorarioAndTarefa {
     @Transaction
-    @Query("SELECT * FROM horario")
+    //@Query("SELECT * FROM horario")
+    @Query("SELECT horario.*, tarefa.* FROM horario INNER JOIN tarefa ON horario.idHorario = tarefa.idTarefa")
     fun getHorariosAndTarefas(): Flow<List<HorarioAndTarefa>>
 }
 
@@ -32,7 +33,7 @@ interface DaoTarefa {
     suspend fun inserir(tarefa: Tarefa): Long
 
     @Update
-      fun editar(tarefa: Tarefa):Int
+    suspend fun editar(tarefa: Tarefa):Int
 
     @Query("SELECT * FROM tarefa")
     fun listar(): Flow<List<Tarefa>>

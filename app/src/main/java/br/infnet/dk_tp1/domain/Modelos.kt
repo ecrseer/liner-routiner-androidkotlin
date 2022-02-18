@@ -1,5 +1,6 @@
 package br.infnet.dk_tp1.domain
 
+import androidx.annotation.NonNull
 import androidx.room.*
 import java.util.*
 
@@ -9,6 +10,7 @@ data class Tarefa(
     val idTarefa:Long,
     val nome:String,
     val descricao:String,
+    @NonNull
     val horarioId:Long,
 ){
     fun cloneComIdDiferente(horaIdNovo:Long): Tarefa {
@@ -24,11 +26,11 @@ data class Horario(
     val fim:Int,
 )
 
-
 data class HorarioAndTarefa(
     @Embedded
     val horario:Horario,
-    @Relation(parentColumn = "idHorario",entityColumn = "horarioId")
+    //@Relation(parentColumn = "idHorario",entityColumn = "horarioId")
+    @Embedded
     val tarefa:Tarefa
 
 )
