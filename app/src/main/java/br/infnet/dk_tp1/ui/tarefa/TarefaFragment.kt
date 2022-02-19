@@ -55,6 +55,7 @@ class TarefaFragment : Fragment() {
                 binding.txtTitulo.setText(it.nome)
             }
         })
+
         viewModel.status.observe(viewLifecycleOwner, Observer {
             it?.let{
                 println("--> $it")
@@ -77,12 +78,22 @@ class TarefaFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.microTarefas.observe(viewLifecycleOwner, Observer {
+            it?.let{
+                with (binding.recyclerTodos){
+                    adapter = MicroTarefasRecyclerViewAdapter(it,{nmber->nmber})
+                }
+            }
+        })
 
         binding.fabSalvarTarefa.setOnClickListener {
             binding.txtTitulo?.text?.toString()?.let{
-                //viewModel.editarTarefa(it)
+
                 viewModel.editarTarefa(it)
             }
+        }
+        binding.fabAdicionaTodo.setOnClickListener{
+            viewModel.adicionarMicrotarefa()
         }
 
     }

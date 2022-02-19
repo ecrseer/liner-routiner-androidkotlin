@@ -31,6 +31,7 @@ import br.infnet.dk_tp1.databinding.MainFragmentBinding
 import br.infnet.dk_tp1.service.HorarioAndTarefaRepository
 import androidx.lifecycle.Observer
 import br.infnet.dk_tp1.ui.dialogs.MeuDatePickerDialog
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.coroutineScope
 import java.io.File
 import java.io.FileOutputStream
@@ -100,13 +101,11 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val now = Calendar.getInstance().timeInMillis;
-
         binding.btnGravar.setOnClickListener {
             val arquivo = File(requireContext()
                 .getExternalFilesDir(Environment.DIRECTORY_DCIM),"rotina.txt" )
             viewModel.gravarRotinasEmArquivo(arquivo)
-
+            Snackbar.make(it,"Gravando sua rotina em ${arquivo.absolutePath}",Snackbar.LENGTH_LONG+4242).show()
         }
 
 
@@ -197,7 +196,6 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 }
             }
         })
-        //viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         val viw = binding.root
         return viw
 
@@ -215,7 +213,10 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    //todo deletar
+
+                    val supostoIdTarefa = viewHolder.adapterPosition+1
+                    viewModel.limparTarefa(supostoIdTarefa.toLong())
+
 
                 }
             }).attachToRecyclerView(it as RecyclerView)

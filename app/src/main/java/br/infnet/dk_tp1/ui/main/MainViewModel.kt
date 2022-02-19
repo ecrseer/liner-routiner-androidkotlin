@@ -41,6 +41,23 @@ class MainViewModel
         }
 
     }
+    fun encontraHorarioPorTarefaId(tarefaId:Long): Horario? {
+        horarioAndTarefas?.value?.let{
+            for(horarioEtarefa in horarioAndTarefas.value!!){
+                if(horarioEtarefa.tarefa.idTarefa==tarefaId)
+                    return horarioEtarefa.horario
+            }
+        }
+        return null
+    }
+
+    fun limparTarefa(idTarefa:Long){
+        viewModelScope.launch {
+            val horario = encontraHorarioPorTarefaId(idTarefa)!!
+            val tarefaLimpa = Tarefa(idTarefa,"","",horario.idHorario)
+            horarioAndTarefaRepository.limparTarefa(tarefaLimpa)
+        }
+    }
 
     fun criar(horario: Horario) {
         val l = ""

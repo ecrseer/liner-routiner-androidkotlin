@@ -31,6 +31,10 @@ class HorarioAndTarefaRepository(
     fun getTodosHorariosAndTarefasLiveData():Flow<List<HorarioAndTarefa>>{
         return daoHorarioTarefa.getHorariosAndTarefas()
     }
+    suspend fun limparTarefa(tarefa:Tarefa): Int {
+        val tarefaLimpa = Tarefa(tarefa.idTarefa,"","",tarefa.horarioId)
+        return daoTarefa.editar(tarefaLimpa)
+    }
 
 }
 

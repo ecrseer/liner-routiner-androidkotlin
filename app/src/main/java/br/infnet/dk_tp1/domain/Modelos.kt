@@ -34,3 +34,7 @@ data class HorarioAndTarefa(
     val tarefa:Tarefa
 
 )
+
+data class MicroTarefa(
+    val idMicroTarefa: Long,
+    val descricao: String)
