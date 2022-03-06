@@ -13,13 +13,14 @@ jobs:
       - uses: gradle/gradle-build-action@v2
         with:
           arguments: build
-          uses: actions/checkout@master
-        - name: Checkout the repository
 
-        - name: Upload APK to Release
-          uses: skx/github-action-publish-binaries@release-1.3
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            args: app/build/outputs/apk/release/**.apk
+      - name: Checkout the repository
+        uses: actions/checkout@master
+
+      - name: Upload APK to Release
+        uses: skx/github-action-publish-binaries@release-1.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: app/build/outputs/apk/release/**.apk
 
