@@ -15,8 +15,8 @@ jobs:
           arguments: build
 
       - name: Upload APK to Release
-          uses: skx/github-action-publish-binaries@master
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            args: app/build/outputs/apk/release/**.apk
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: app/build/outputs/apk/release/**.apk
