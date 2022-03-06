@@ -3,6 +3,7 @@ on: [ push ]
 jobs:
   build:
     runs-on: ubuntu-latest
+    needs: [ create_release ]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -13,11 +14,14 @@ jobs:
       - uses: gradle/gradle-build-action@v2
         with:
           arguments: build
-  upload_artifacts:
-    name: Upload Artifacts
-    needs: [ create_release ]
+
+  generate:
+    name: Create release-artifacts
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout the repository
+        uses: actions/checkout@master
+
       - name: Upload APK to Release
         uses: skx/github-action-publish-binaries@release-1.3
         env:
