@@ -59,12 +59,4 @@ class MainViewModel
         }
     }
 
-    fun criar(horario: Horario) {
-        val l = ""
-        viewModelScope.launch {
-            val id = horarioAndTarefaRepository.inserirHorario(horario)
-            val i = 0
-        }
-    }
-
 }

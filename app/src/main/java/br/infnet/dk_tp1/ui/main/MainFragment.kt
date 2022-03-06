@@ -101,7 +101,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnGravar.setOnClickListener {
+        binding.btnGravar.setOnClickListener { 
             val arquivo = File(requireContext()
                 .getExternalFilesDir(Environment.DIRECTORY_DCIM),"rotina.txt" )
             viewModel.gravarRotinasEmArquivo(arquivo)
@@ -190,11 +190,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         _binding = MainFragmentBinding.inflate(inflater, container, false)
 
         viewModel.horarios.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                if (it.size == 0) {
-                    //viewModel.popularHorarios()
-                }
-            }
+
         })
         val viw = binding.root
         return viw
@@ -235,29 +231,6 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         //TODO("Not yet implemented")
         val yea = year
     }
-    private fun record(){
 
-        //openDirectory(external)
-        /*requireContext()?.openFileOutput("my_routine ${now}.txt", Context.MODE_PRIVATE)
-                .use {
-                    var bigtxt = "$now\n"
-                    it.write(bigtxt.toByteArray())
-
-                    viewModel.horarioAndTarefas.value?.forEach {
-                        val temTarefa = it.tarefa
-                        temTarefa?.let{tarefa ->
-                            bigtxt+= "${tarefa.nome}, ${tarefa.descricao}\n"
-                        }
-                    }
-                    it.write(bigtxt.toString().toByteArray())
-                }
-            requireContext()?.getExternalFilesDir(null)?.let {
-                val f = File(it, "my_routine ${now}")
-
-                //viewModel.recordFile(f)
-
-
-            }*/
-    }
 
 }

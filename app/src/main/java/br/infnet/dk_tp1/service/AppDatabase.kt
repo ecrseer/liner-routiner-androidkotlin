@@ -28,7 +28,6 @@ abstract class AppDatabase : RoomDatabase(){
     abstract fun getTarefaDAO(): DaoTarefa
 
     companion object {
-        //@Singleton
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -50,13 +49,9 @@ abstract class AppDatabase : RoomDatabase(){
         private class AppHorarioTarefaDatabaseCallback(
             private val scope: CoroutineScope
         ) : RoomDatabase.Callback() {
-            /**
-             * Override the onCreate method to populate the database.
-             */
+
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
-                // If you want to keep the data through app restarts,
-                // comment out the following line.
                 INSTANCE?.let { database ->
                     scope.launch(Dispatchers.IO) {
                         populateDatabase(database.getHorarioDAO(),
@@ -66,10 +61,7 @@ abstract class AppDatabase : RoomDatabase(){
             }
         }
 
-        /**
-         * Populate the database in a new coroutine.
-         * If you want to start with more words, just add them.
-         */
+
         suspend fun populateDatabase(horarioDAO: DaoHorario,tarefaDAO:DaoTarefa) {
             for(horario in PopulateDatabase.CONST_HORARIOS){
                 horarioDAO.inserir(horario)
