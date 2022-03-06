@@ -1,5 +1,5 @@
 name: CI
-on: [push]
+on: [ push ]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,3 +13,10 @@ jobs:
       - uses: gradle/gradle-build-action@v2
         with:
           arguments: build
+
+      - name: Upload APK to Release
+          uses: skx/github-action-publish-binaries@master
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            args: app/build/outputs/apk/release/**.apk
