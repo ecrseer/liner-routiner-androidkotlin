@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "430827875070",
+    "project_id": "dk-tp1",
+    "storage_bucket": "dk-tp1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:430827875070:android:d43fcd91542c2190b613af",
+        "android_client_info": {
+          "package_name": "br.infnet.dk_tp1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "430827875070-glp49lg642cn0suueiatq5q27fk6to8k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4RSDl2r_WaBo-FbJWgtFS79vqPyL4ZYE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "430827875070-glp49lg642cn0suueiatq5q27fk6to8k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
