@@ -147,12 +147,14 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             viewModel.tarefas.observe(viewLifecycleOwner, Observer {
                 it?.size?.let {
                     adapter = SliderAdapter(childFragmentManager, lifecycle, it)
+                    binding.seekBar.max = it-1
                 }
             })
             this.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
                     binding.seekBar.progress = position
+
                     sincronizaHorarioTxt(position)
                 }
             })
