@@ -3,12 +3,22 @@ package br.infnet.dk_tp1.service
 import androidx.lifecycle.LiveData
 import br.infnet.dk_tp1.domain.*
 import kotlinx.coroutines.flow.Flow
-
+class RoutinesRepository(
+    private val daoRoutine:DaoRoutine,
+){
+    suspend fun getAllRoutines(): List<RoutineWithHorario> {
+        return daoRoutine.loadRoutinesWithHorarios()
+    }
+}
 class HorarioAndTarefaRepository(
+    private val daoRoutine:DaoRoutine,
     private val daoHorarioTarefa: DaoHorarioAndTarefa,
     private val daoHorario: DaoHorario,
     private val daoTarefa:DaoTarefa
 ) {
+    suspend fun getAllRoutines(): List<RoutineWithHorario> {
+        return daoRoutine.loadRoutinesWithHorarios()
+    }
     suspend fun inserirHorario(horario:Horario): Long {
         return daoHorario.inserir(horario)
     }

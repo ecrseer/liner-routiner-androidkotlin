@@ -1,9 +1,7 @@
 package br.infnet.dk_tp1.service
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 import br.infnet.dk_tp1.domain.*
 import kotlinx.coroutines.CoroutineScope
@@ -20,9 +18,11 @@ private val IO_EXECUTOR = Executors.newSingleThreadExecutor()
 fun ioThread(f : () -> Unit) {
     IO_EXECUTOR.execute(f)
 }
-@Database(entities = [Tarefa::class,Horario::class], version = 1, exportSchema = false)
+@Database(entities = [Routine::class,Tarefa::class,Horario::class], version = 1, exportSchema = false)
+@TypeConverters(DbConverters::class)
 abstract class AppDatabase : RoomDatabase(){
 
+    abstract fun getRoutineDAO(): DaoRoutine
     abstract fun getHorarioAndTarefaDAO(): DaoHorarioAndTarefa
     abstract fun getHorarioDAO(): DaoHorario
     abstract fun getTarefaDAO(): DaoTarefa
@@ -39,7 +39,8 @@ abstract class AppDatabase : RoomDatabase(){
                     AppDatabase::class.java, "db_tarefahorario.db"
                 )
                     .fallbackToDestructiveMigration()
-                    .addCallback(AppHorarioTarefaDatabaseCallback(scope)).build()
+                    //.addCallback(AppHorarioTarefaDatabaseCallback(scope))
+                    .build()
                 INSTANCE = instance;
 
                 return instance

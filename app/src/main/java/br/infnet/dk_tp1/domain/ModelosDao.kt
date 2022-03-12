@@ -5,6 +5,12 @@ import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
+ interface DaoRoutine {
+    @Query("SELECT * FROM routine")
+    fun loadRoutinesWithHorarios():List<RoutineWithHorario>
+}
+
+@Dao
 interface DaoHorarioAndTarefa {
     @Transaction
     //@Query("SELECT * FROM horario")
