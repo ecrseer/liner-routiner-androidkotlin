@@ -1,15 +1,18 @@
 package br.infnet.dk_tp1.ui.routines
 
 import androidx.lifecycle.*
+import br.infnet.dk_tp1.domain.PopulateDatabase
 import br.infnet.dk_tp1.domain.Routine
-import br.infnet.dk_tp1.service.RoutinesRepository
+import br.infnet.dk_tp1.service.HorarioAndTarefaRepository
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.*
 
-class RouteViewModelFactory(private val repository: RoutinesRepository) :
+class RouteViewModelFactory(private val repository: HorarioAndTarefaRepository) :
     ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -21,11 +24,12 @@ class RouteViewModelFactory(private val repository: RoutinesRepository) :
 }
 
 class RoutineViewModel
-    (private val routinesRepository: RoutinesRepository) : ViewModel() {
+    (private val repository: HorarioAndTarefaRepository) : ViewModel() {
+
 
     //tarefa.postValue(tarefaRepository.getTarefaById(idTarefa))
     val status = MutableLiveData<String>().apply { value = "" }
-    val userRoutines = routinesRepository.getAllRoutineLiveData().asLiveData()
+    val userRoutines = repository.getAllRoutineLiveData().asLiveData()
     val userRoutine = MutableLiveData<MutableList<Routine>>(
         mutableListOf(
             Routine(1L, "FSDS2F"),
@@ -33,29 +37,67 @@ class RoutineViewModel
         )
     )
     val lastRoutineIdAdded = MutableLiveData<Long>()
+    val lastRoutineAdded = MutableLiveData<Routine>()
+
     fun addRoutine() {
         viewModelScope.launch {
             val now = Calendar.getInstance().timeInMillis
-            val routine = Routine(0, "$now", listOf(""))
-            var idRoutine: Long = 0
-            val task = async { routinesRepository.inserirRoutine(routine) }
-            idRoutine = task.await()
+            val routine = Routine(null, "$now", listOf(""))
+            val task = async { repository.inserirRoutine(routine) }
+            val idRoutine = task.await()
             routine.idRoutine = idRoutine
             lastRoutineIdAdded.postValue(idRoutine)
+            lastRoutineAdded.postValue(routine)
         }
     }
 
-    fun createRoutine(userId: String): Int {
-        userRoutines?.value?.let {
-            val lastRoutine = it.last()
+
+    fun createRoutineOnFirestore(userId: String,routine:Routine): Int {
 
             val routines = Firebase.firestore
                 .collection("users").document(userId)
                 .collection("routines")
 
-            routines.add(lastRoutine)
-        }
+            val task = routines.add(routine)
+            task.addOnSuccessListener {
+                    addedroutine->
+                addedroutine.get().addOnSuccessListener {
+                    val routine =   it.toObject(Routine::class.java)
+                    viewModelScope.launch {
+                        if (routine != null) {
+                            repository.modificarRoutine(routine)
+                        }
+                    }
+                    createRoutineHorarios(addedroutine,routines)
+                }
+
+            }
+
         return 1
+    }
+
+    private fun createRoutineHorarios(routine: DocumentReference?, routines: CollectionReference) {
+        viewModelScope.launch {
+            if (routine != null) {
+
+                val horarios = routine.collection("horarios")
+                for(horario in PopulateDatabase.CONST_HORARIOS){
+                    horarios.add(horario)
+                }
+                createRoutineTarefas(routine,routines)
+            }
+        }
+
+
+    }
+    private fun createRoutineTarefas(routine: DocumentReference?, routines: CollectionReference) {
+        //viewmodelscope
+        if (routine != null) {
+            val tarefas = routine.collection("tarefas")
+            for(tarefa in PopulateDatabase.CONST_TAREFAS){
+                tarefas.add(tarefa)
+            }
+        }
     }
 
 }

@@ -5,13 +5,22 @@ import br.infnet.dk_tp1.domain.Horario
 import br.infnet.dk_tp1.domain.HorarioAndTarefa
 import br.infnet.dk_tp1.domain.Tarefa
 import br.infnet.dk_tp1.service.HorarioAndTarefaRepository
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObjects
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
 class MainViewModel
-    (private val horarioAndTarefaRepository: HorarioAndTarefaRepository) : ViewModel() {
+    (
+    private val horarioAndTarefaRepository: HorarioAndTarefaRepository,
+    userId: String,
+    routineId: String
+) : ViewModel() {
     // TODO: Implement the ViewModel
+
     val tarefas =
         horarioAndTarefaRepository.getAllTarefasLiveData().asLiveData()
     val horarios: LiveData<List<Horario>> =
@@ -19,7 +28,37 @@ class MainViewModel
     val horarioAndTarefas: LiveData<List<HorarioAndTarefa>> =
         horarioAndTarefaRepository.getTodosHorariosAndTarefasLiveData().asLiveData()
 
+   val routine = Firebase.firestore
+        .collection("users").document(userId)
+        .collection("routines").document(routineId)
 
+    val tarefas2 = MutableLiveData<List<Tarefa>>()
+    val horarios2 = MutableLiveData<List<Horario>> ()
+
+    val horarioAndTarefas2 = MutableLiveData<List<HorarioAndTarefa>>()
+        //horarioAndTarefaRepository.getTodosHorariosAndTarefasLiveData().asLiveData()
+
+
+    fun loadFsData(){
+        val asc = Query.Direction.ASCENDING
+        if(horarios2.value.isNullOrEmpty() ){
+            routine.collection("horarios")
+                .orderBy("inicio",asc).get()
+                .addOnSuccessListener {snapshot->
+                val list = snapshot.toObjects<Horario>()
+                horarios2.postValue(list)
+            }
+        }
+        if(tarefas2.value.isNullOrEmpty() ){
+            routine.collection("tarefas")
+                .orderBy("idTarefa",asc).get()
+                .addOnSuccessListener {snapshot->
+                    val list = snapshot.toObjects<Tarefa>()
+                    tarefas2.postValue(list)
+                }
+
+        }
+    }
 
     fun gravarRotinasEmArquivo(arquivo: File) {
         viewModelScope.launch {
@@ -27,13 +66,13 @@ class MainViewModel
             var rotinaTxt = "exemplo"
             horarioAndTarefas.value?.forEach {
                 val temTarefa = it.tarefa
-                rotinaTxt+= """
+                rotinaTxt += """
                     -------------------\n
                     Horario ${it.horario.inicio}:00 as ${it.horario.fim}:00 
                     
                 """.trimIndent()
-                temTarefa?.let{tarefa ->
-                    rotinaTxt+= "${tarefa.nome}, ${tarefa.descricao}\n"
+                temTarefa?.let { tarefa ->
+                    rotinaTxt += "${tarefa.nome}, ${tarefa.descricao}\n"
                 }
             }
             stream.write(rotinaTxt.toByteArray())
@@ -41,20 +80,21 @@ class MainViewModel
         }
 
     }
-    fun encontraHorarioPorTarefaId(tarefaId:Long): Horario? {
-        horarioAndTarefas?.value?.let{
-            for(horarioEtarefa in horarioAndTarefas.value!!){
-                if(horarioEtarefa.tarefa.idTarefa==tarefaId)
+
+    fun encontraHorarioPorTarefaId(tarefaId: Long): Horario? {
+        horarioAndTarefas?.value?.let {
+            for (horarioEtarefa in horarioAndTarefas.value!!) {
+                if (horarioEtarefa.tarefa.idTarefa == tarefaId)
                     return horarioEtarefa.horario
             }
         }
         return null
     }
 
-    fun limparTarefa(idTarefa:Long){
+    fun limparTarefa(idTarefa: Long) {
         viewModelScope.launch {
             val horario = encontraHorarioPorTarefaId(idTarefa)!!
-            val tarefaLimpa = Tarefa(idTarefa,"","",horario.idHorario)
+            val tarefaLimpa = Tarefa(idTarefa, "", "", horario.idHorario)
             horarioAndTarefaRepository.limparTarefa(tarefaLimpa)
         }
     }

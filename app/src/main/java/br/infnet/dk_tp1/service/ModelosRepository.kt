@@ -23,9 +23,23 @@ class HorarioAndTarefaRepository(
     private val daoHorario: DaoHorario,
     private val daoTarefa:DaoTarefa
 ) {
-    suspend fun getAllRoutines(): List<RoutineWithHorario> {
-        return daoRoutine.loadRoutinesWithHorarios()
-    }
+
+        suspend fun getAllRoutines(): List<RoutineWithHorario> {
+            return daoRoutine.loadRoutinesWithHorarios()
+        }
+        suspend fun inserirRoutine(routine: Routine): Long {
+            return daoRoutine.inserir(routine)
+
+        }
+        fun getAllRoutineLiveData(): Flow<List<Routine>> {
+            return daoRoutine.listar()
+        }
+        suspend fun modificarRoutine(routine:Routine): Int {
+            return daoRoutine.editar(routine)
+        }
+
+
+
     suspend fun inserirHorario(horario:Horario): Long {
         return daoHorario.inserir(horario)
     }

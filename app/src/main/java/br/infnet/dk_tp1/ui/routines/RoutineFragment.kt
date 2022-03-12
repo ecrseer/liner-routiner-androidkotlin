@@ -41,7 +41,7 @@ class RoutineFragment : Fragment() {
 
 
         val linerApp = requireActivity().application as LinerRoutinerApplication
-        val factory = RouteViewModelFactory(linerApp.routinesRepository)
+        val factory = RouteViewModelFactory(linerApp.horarioAndTarefaRepository)
         viewModel = ViewModelProvider(this, factory).get(RoutineViewModel::class.java)
 
         binding = FragmentRoutineListBinding.inflate(inflater, container, false)
@@ -58,23 +58,29 @@ class RoutineFragment : Fragment() {
                 addRoutine()
             }
             lastRoutineIdAdded.observe(viewLifecycleOwner, Observer {
-                activityViewModel.mUserLiveData.value?.let {user->
-                    createRoutine(user.uid)
+
+            })
+            lastRoutineAdded.observe(viewLifecycleOwner, Observer {routine->
+                routine?.let{
+                    activityViewModel.mUserLiveData.value?.let {user->
+                        createRoutineOnFirestore(user.uid,routine)
+                    }
                 }
             })
             userRoutines.observe(viewLifecycleOwner, Observer {
                 it?.let {
                     updateList(it, view)
                 }
+
             })
         }
     }
 
     private fun updateList(routines: List<Routine>, view: View) {
 
-        binding.list.adapter = MyRoutineRecyclerViewAdapter(routines) { position ->
-            val act =
-                RoutineFragmentDirections.actionRoutineFragmentToMainFragment2(position)
+        binding.list.adapter = MyRoutineRecyclerViewAdapter(routines) { position,routineId ->
+            val act = RoutineFragmentDirections
+                .actionRoutineFragmentToMainFragment2(position = position,routineId = routineId)
             view.findNavController().navigate(act)
         }
 

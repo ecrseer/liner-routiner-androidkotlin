@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
 
-            goToPage(MainFragment.newInstance())
+            goToPage(LoginFragment.newInstance(""))
         }
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)

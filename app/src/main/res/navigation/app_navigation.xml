@@ -25,5 +25,8 @@
             android:name="position"
             app:argType="integer"
             android:defaultValue="0" />
+        <argument
+            android:name="routineId"
+            app:argType="string" />
     </fragment>
 </navigation>

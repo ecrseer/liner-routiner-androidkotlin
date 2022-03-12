@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.Flow
 
     @Query("SELECT * FROM routine")
     fun listar(): Flow<List<Routine>>
+
+    @Update
+    suspend fun editar(routine: Routine):Int
 }
 
 @Dao

@@ -1,66 +1,89 @@
 package br.infnet.dk_tp1.ui.main
 
 import android.app.DatePickerDialog
-import android.app.Dialog
-import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
-import android.provider.MediaStore
-import android.text.format.DateFormat
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.SeekBar
-import android.widget.TimePicker
 import androidx.core.view.children
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import br.infnet.dk_tp1.LinerRoutinerApplication
 import br.infnet.dk_tp1.databinding.MainFragmentBinding
 import br.infnet.dk_tp1.service.HorarioAndTarefaRepository
-import androidx.lifecycle.Observer
+import br.infnet.dk_tp1.ui.MainActivityViewModel
 import br.infnet.dk_tp1.ui.dialogs.MeuDatePickerDialog
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.coroutineScope
 import java.io.File
-import java.io.FileOutputStream
 import java.util.*
 
 class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
+    private val ARG_PARAM1 = "userId"
+
     companion object {
-        fun newInstance() = MainFragment()
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment using the provided parameters.
+         *
+         * @param param1 Parameter 1.
+         * @param param2 Parameter 2.
+         * @return A new instance of fragment LoggedinFragment.
+         */
+        // TODO: Rename and change types and number of parameters
+        @JvmStatic
+        fun newInstance(idUser: String) =
+            MainFragment()/*.apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM1, idUser)
+                }
+            }*/
     }
 
     private var _binding: MainFragmentBinding? = null
     private val binding get() = _binding!!
+
     //private lateinit var viewModel: MainViewModel
+    val args: MainFragmentArgs by navArgs()
 
+    val activityViewModel: MainActivityViewModel by activityViewModels()
 
-    inner class MainViewModelFactory(private val repository: HorarioAndTarefaRepository) :
+    inner class MainViewModelFactory(
+        private val repository: HorarioAndTarefaRepository,
+        private val userId: String,
+        private val routineId: String
+    ) :
         ViewModelProvider.Factory {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-                return MainViewModel(repository) as T;
+                return MainViewModel(repository, userId, routineId) as T;
             }
             throw IllegalArgumentException(" ViewModel instanciando errado")
         }
     }
 
-    private val viewModel: MainViewModel by activityViewModels {
+    private val viewModel: MainViewModel by viewModels {
+        val app = requireActivity().application as LinerRoutinerApplication
+
         MainViewModelFactory(
-            (requireActivity().application as LinerRoutinerApplication).horarioAndTarefaRepository
+            app.horarioAndTarefaRepository,
+            activityViewModel.mUserLiveData.value!!.uid,
+            args.routineId
         )
     }
 
@@ -101,14 +124,25 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnGravar.setOnClickListener { 
-            val arquivo = File(requireContext()
-                .getExternalFilesDir(Environment.DIRECTORY_DCIM),"rotina.txt" )
+        binding.btnGravar.setOnClickListener {
+            val arquivo = File(
+                requireContext()
+                    .getExternalFilesDir(Environment.DIRECTORY_DCIM), "rotina.txt"
+            )
             viewModel.gravarRotinasEmArquivo(arquivo)
-            Snackbar.make(it,"Gravando sua rotina em ${arquivo.absolutePath}",Snackbar.LENGTH_LONG+4242).show()
+            Snackbar.make(
+                it,
+                "Gravando sua rotina em ${arquivo.absolutePath}",
+                Snackbar.LENGTH_LONG + 4242
+            ).show()
         }
 
-
+        viewModel.horarios2.observe(viewLifecycleOwner, Observer {
+            it?.let{
+                println(it)
+            }
+        })
+        viewModel.loadFsData()
 
         setupViewPagerComSeekbar()
         escutarSwitchRotinaTemporaria()
@@ -147,7 +181,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             viewModel.tarefas.observe(viewLifecycleOwner, Observer {
                 it?.size?.let {
                     adapter = SliderAdapter(childFragmentManager, lifecycle, it)
-                    binding.seekBar.max = it-1
+                    binding.seekBar.max = it - 1
                 }
             })
             this.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -179,7 +213,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     override fun onResume() {
         super.onResume()
         viewModel.horarioAndTarefas.observe(viewLifecycleOwner, Observer {
-             sincronizaHorarioTxt(0)
+            sincronizaHorarioTxt(0)
         })
 
     }
@@ -194,6 +228,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         viewModel.horarios.observe(viewLifecycleOwner, Observer {
 
         })
+
         val viw = binding.root
         return viw
 
@@ -212,9 +247,8 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
-                    val supostoIdTarefa = viewHolder.adapterPosition+1
+                    val supostoIdTarefa = viewHolder.adapterPosition + 1
                     viewModel.limparTarefa(supostoIdTarefa.toLong())
-
 
                 }
             }).attachToRecyclerView(it as RecyclerView)

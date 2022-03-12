@@ -16,7 +16,7 @@ import br.infnet.dk_tp1.domain.Routine
 class MyRoutineRecyclerViewAdapter(
     private val values: List<Routine>,
 
-    val funcaoParaClic:(Int)->Unit
+    val funcaoParaClic:(Int,String)->Unit
 ) : RecyclerView.Adapter<MyRoutineRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,7 +38,7 @@ class MyRoutineRecyclerViewAdapter(
 
     override fun getItemCount(): Int = values.size
 
-    inner class ViewHolder(binding: FragmentRoutineBinding, funcaoDeClic: (Int) -> Unit) :
+    inner class ViewHolder(binding: FragmentRoutineBinding, funcaoDeClic: (Int,String) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
         val idView: TextView = binding.itemNumber
         val contentView: TextView = binding.content
@@ -47,7 +47,9 @@ class MyRoutineRecyclerViewAdapter(
 
         init {
             fundo.setOnClickListener {
-                funcaoDeClic(bindingAdapterPosition)
+                val d = values
+                val routineId= values[bindingAdapterPosition].firestoreIdRoutine
+                funcaoDeClic(bindingAdapterPosition,routineId!!)
             }
         }
 
