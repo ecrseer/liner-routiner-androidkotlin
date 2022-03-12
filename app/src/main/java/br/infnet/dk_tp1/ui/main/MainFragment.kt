@@ -140,6 +140,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         viewModel.horarios2.observe(viewLifecycleOwner, Observer {
             it?.let{
                 println(it)
+
             }
         })
         viewModel.loadFsData()
