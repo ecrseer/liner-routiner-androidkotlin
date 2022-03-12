@@ -6,13 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import br.infnet.dk_tp1.LinerRoutinerApplication
+import br.infnet.dk_tp1.R
 import br.infnet.dk_tp1.databinding.FragmentLoggedinBinding
-import br.infnet.dk_tp1.ui.tarefa.MicroTarefasRecyclerViewAdapter
-import br.infnet.dk_tp1.ui.tarefa.TarefaViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -33,7 +34,6 @@ class LoggedinFragment : Fragment() {
     private lateinit var binding:FragmentLoggedinBinding
 
     val activityViewModel: MainActivityViewModel by activityViewModels()
-    lateinit var viewModel: LoggedinViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,10 +46,6 @@ class LoggedinFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val linerApp = requireActivity().application as LinerRoutinerApplication
-        val factory = LoggedinViewModelFactory(linerApp.routinesRepository)
-        viewModel = ViewModelProvider(this,factory).get(LoggedinViewModel::class.java)
-
         binding = FragmentLoggedinBinding.inflate(inflater,container,false)
         return binding.root
         //return inflater.inflate(R.layout.fragment_loggedin, container, false)
@@ -57,13 +53,7 @@ class LoggedinFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.userRoutines.observe(viewLifecycleOwner, Observer {
-            it?.let{
-                with (binding.routinesRv){
-                    adapter = MicroTarefasRecyclerViewAdapter(it,{nmber->nmber})
-                }
-            }
-        })
+
     }
 
 

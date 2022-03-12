@@ -3,38 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_navigation"
-    app:startDestination="@id/mainFragment">
-
+    app:startDestination="@id/routineFragment">
     <fragment
-        android:id="@+id/mainFragment"
-        android:name="br.infnet.dk_tp1.ui.main.MainFragment"
-        android:label="fragment_tvshow_list"
-        tools:layout="@layout/main_fragment" />
-    <fragment
-        android:id="@+id/loginFragment"
-        android:name="br.infnet.dk_tp1.ui.login.LoginFragment"
-        android:label="login_fragment"
-        tools:layout="@layout/fragment_login" >
+        android:id="@+id/routineFragment"
+        android:name="br.infnet.dk_tp1.ui.routines.RoutineFragment"
+        android:label="fragment_routine_list"
+        tools:layout="@layout/fragment_routine_list" >
         <action
-            android:id="@+id/action_loginFragment_to_signUpDialog"
-            app:destination="@id/signUpDialog" />
-        <action
-            android:id="@+id/action_loginFragment_to_signInDialog"
-            app:destination="@id/signInDialog" />
+            android:id="@+id/action_routineFragment_to_mainFragment2"
+            app:destination="@id/mainFragment2" />
     </fragment>
-    <dialog
-        android:id="@+id/loginDialogFragmentOpen"
-        android:name="br.infnet.dk_tp1.ui.login.LoginDialogFragmentOpen"
-        android:label="login_dialog_fragment_open"
-        tools:layout="@layout/fragment_login_dialog_open" >
-
-    </dialog>
-    <dialog
-        android:id="@+id/signInDialog"
-        android:name="br.infnet.dk_tp1.ui.login.SignInDialog"
-        android:label="SignInDialog" />
-    <dialog
-        android:id="@+id/signUpDialog"
-        android:name="br.infnet.dk_tp1.ui.login.SignUpDialog"
-        android:label="SignUpDialog" />
+    <fragment
+        android:id="@+id/mainFragment2"
+        android:name="br.infnet.dk_tp1.ui.main.MainFragment"
+        android:label="main_fragment"
+        tools:layout="@layout/main_fragment" />
 </navigation>

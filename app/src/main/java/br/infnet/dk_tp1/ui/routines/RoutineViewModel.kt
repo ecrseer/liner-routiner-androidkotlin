@@ -1,35 +1,33 @@
-package br.infnet.dk_tp1.ui
+package br.infnet.dk_tp1.ui.routines
 
 import androidx.lifecycle.*
-import br.infnet.dk_tp1.domain.MicroTarefa
-import br.infnet.dk_tp1.domain.Tarefa
+import br.infnet.dk_tp1.domain.Routine
 import br.infnet.dk_tp1.service.RoutinesRepository
-import kotlinx.coroutines.launch
 
-class LoggedinViewModelFactory (private val repository: RoutinesRepository): ViewModelProvider.Factory {
+class RouteViewModelFactory (private val repository: RoutinesRepository): ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(LoggedinViewModel::class.java)){
-            return LoggedinViewModel(repository) as T;
+        if(modelClass.isAssignableFrom(RoutineViewModel::class.java)){
+            return RoutineViewModel(repository) as T;
         }
         throw IllegalArgumentException(" LoggedinViewModel instanciando errado")
     }
 }
-class LoggedinViewModel
+class RoutineViewModel
     (private val routinesRepository: RoutinesRepository) : ViewModel() {
 
     //tarefa.postValue(tarefaRepository.getTarefaById(idTarefa))
     val status=MutableLiveData<String>().apply{value=""}
 
-    val userRoutines = MutableLiveData<MutableList<MicroTarefa>>(
+    val userRoutines = MutableLiveData<MutableList<Routine>>(
         mutableListOf(
-            MicroTarefa(1L, "comer"),
-            MicroTarefa(2L, "beber")
+            Routine(1L, "FSDS2F"),
+            Routine(2L, "DFSDSF")
         )
     )
     fun adicionarMicrotarefa(){
         val novalista = userRoutines.value
-        novalista?.add(MicroTarefa(1L, ""))
+        novalista?.add(Routine(1L, ""))
         userRoutines.postValue(novalista!!)
     }
 

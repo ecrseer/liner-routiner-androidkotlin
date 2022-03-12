@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: MainActivityBinding
 
     val activityViewModel: MainActivityViewModel by viewModels()
-    private fun goToPage(fragment: Fragment) {
+    fun goToPage(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, fragment)
             .commitNow()

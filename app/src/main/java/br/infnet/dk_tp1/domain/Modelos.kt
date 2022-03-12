@@ -8,6 +8,7 @@ import java.util.*
 data class Routine(
     @PrimaryKey(autoGenerate = true)
     val idRoutine: Long? = null,
+    val name:String?=null,
     val horariosIdsFirebase: List<String>? = null
 )
 
