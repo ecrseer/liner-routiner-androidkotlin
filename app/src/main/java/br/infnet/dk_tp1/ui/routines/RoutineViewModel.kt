@@ -3,6 +3,10 @@ package br.infnet.dk_tp1.ui.routines
 import androidx.lifecycle.*
 import br.infnet.dk_tp1.domain.Routine
 import br.infnet.dk_tp1.service.RoutinesRepository
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.*
+import java.util.*
 
 class RouteViewModelFactory (private val repository: RoutinesRepository): ViewModelProvider.Factory {
 
@@ -18,17 +22,31 @@ class RoutineViewModel
 
     //tarefa.postValue(tarefaRepository.getTarefaById(idTarefa))
     val status=MutableLiveData<String>().apply{value=""}
-
-    val userRoutines = MutableLiveData<MutableList<Routine>>(
+    val userRoutines = routinesRepository.getAllRoutineLiveData().asLiveData()
+    val userRoutine = MutableLiveData<MutableList<Routine>>(
         mutableListOf(
             Routine(1L, "FSDS2F"),
             Routine(2L, "DFSDSF")
         )
     )
-    fun adicionarMicrotarefa(){
-        val novalista = userRoutines.value
-        novalista?.add(Routine(1L, ""))
-        userRoutines.postValue(novalista!!)
+    val lastRoutineIdAdded = MutableLiveData<Long>()
+    fun addRoutine() {
+        viewModelScope.launch {
+        val now= Calendar.getInstance().timeInMillis
+        val routine = Routine(0, "$now",listOf(""))
+        var idRoutine:Long =0
+            val task = async { routinesRepository.inserirRoutine(routine) }
+            idRoutine = task.await()
+        routine.idRoutine = idRoutine
+        lastRoutineIdAdded.postValue(idRoutine)
+        }
+    }
+    fun createRoutine(userId:String): Int {
+        userRoutines?.value?.let {
+            it.last()
+            //Firebase.firestore.collection(userId).
+        }
+        return 1
     }
 
 }

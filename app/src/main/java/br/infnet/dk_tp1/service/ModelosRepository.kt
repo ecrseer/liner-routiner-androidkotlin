@@ -9,6 +9,13 @@ class RoutinesRepository(
     suspend fun getAllRoutines(): List<RoutineWithHorario> {
         return daoRoutine.loadRoutinesWithHorarios()
     }
+    suspend fun inserirRoutine(routine: Routine): Long {
+        return daoRoutine.inserir(routine)
+
+    }
+     fun getAllRoutineLiveData(): Flow<List<Routine>> {
+        return daoRoutine.listar()
+    }
 }
 class HorarioAndTarefaRepository(
     private val daoRoutine:DaoRoutine,

@@ -46,7 +46,7 @@ class MainActivityViewModel : ViewModel() {
         mUser?.let {
 
             val users_collection = Firebase.firestore.collection("users")
-            //val tvShowSample = Tvshow(21, "friends", "#http")
+
             val newuser: MyFirestoreUser? = mUser.email?.let {
                 MyFirestoreUser(mUser.uid, mUser.displayName, it)
             }

@@ -7,7 +7,7 @@ import java.util.*
 @Entity
 data class Routine(
     @PrimaryKey(autoGenerate = true)
-    val idRoutine: Long? = null,
+    var idRoutine: Long? = null,
     val name:String?=null,
     val horariosIdsFirebase: List<String>? = null
 )

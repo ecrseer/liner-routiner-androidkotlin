@@ -7,10 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import br.infnet.dk_tp1.LinerRoutinerApplication
 import br.infnet.dk_tp1.R
 import br.infnet.dk_tp1.databinding.FragmentRoutineListBinding
-import br.infnet.dk_tp1.ui.routines.placeholder.PlaceholderContent
+import br.infnet.dk_tp1.domain.Routine
 
 /**
  * A fragment representing a list of Items.
@@ -48,15 +49,30 @@ class RoutineFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.userRoutines.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                with(binding.list) {
-                    adapter=MyRoutineRecyclerViewAdapter (it,{})
-                    //adapter = MicroTarefasRecyclerViewAdapter(it,{nmber->nmber})
+        with(viewModel) {
 
-                }
+            binding.fabCreateroutine.setOnClickListener {
+                addRoutine()
             }
-        })
+            lastRoutineIdAdded.observe(viewLifecycleOwner, Observer {
+                createRoutine("")
+            })
+            userRoutines.observe(viewLifecycleOwner, Observer {
+                it?.let {
+                    updateList(it, view)
+                }
+            })
+        }
+    }
+
+    private fun updateList(routines: List<Routine>, view: View) {
+
+        binding.list.adapter = MyRoutineRecyclerViewAdapter(routines) { position ->
+            val act =
+                RoutineFragmentDirections.actionRoutineFragmentToMainFragment2(position)
+            view.findNavController().navigate(act)
+        }
+
     }
 
     companion object {

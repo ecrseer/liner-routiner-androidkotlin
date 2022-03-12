@@ -8,6 +8,12 @@ import kotlinx.coroutines.flow.Flow
  interface DaoRoutine {
     @Query("SELECT * FROM routine")
     fun loadRoutinesWithHorarios():List<RoutineWithHorario>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun inserir(routine: Routine): Long
+
+    @Query("SELECT * FROM routine")
+    fun listar(): Flow<List<Routine>>
 }
 
 @Dao

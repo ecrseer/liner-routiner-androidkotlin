@@ -47,6 +47,7 @@ class LoggedinFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentLoggedinBinding.inflate(inflater,container,false)
+        activityViewModel.verifyCurrentUser()
         return binding.root
         //return inflater.inflate(R.layout.fragment_loggedin, container, false)
     }
