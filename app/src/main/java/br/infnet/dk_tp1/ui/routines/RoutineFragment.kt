@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -12,6 +13,7 @@ import br.infnet.dk_tp1.LinerRoutinerApplication
 import br.infnet.dk_tp1.R
 import br.infnet.dk_tp1.databinding.FragmentRoutineListBinding
 import br.infnet.dk_tp1.domain.Routine
+import br.infnet.dk_tp1.ui.MainActivityViewModel
 
 /**
  * A fragment representing a list of Items.
@@ -20,6 +22,7 @@ class RoutineFragment : Fragment() {
 
     private var columnCount = 1
 
+    val activityViewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding: FragmentRoutineListBinding
     lateinit var viewModel: RoutineViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +58,9 @@ class RoutineFragment : Fragment() {
                 addRoutine()
             }
             lastRoutineIdAdded.observe(viewLifecycleOwner, Observer {
-                createRoutine("")
+                activityViewModel.mUserLiveData.value?.let {user->
+                    createRoutine(user.uid)
+                }
             })
             userRoutines.observe(viewLifecycleOwner, Observer {
                 it?.let {

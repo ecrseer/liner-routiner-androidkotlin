@@ -53,8 +53,7 @@ class MainActivityViewModel : ViewModel() {
             if (newuser != null) {
                 val task = users_collection.document(mUser.uid).set(newuser)
                 task?.addOnSuccessListener {
-                    val ldf = it
-                    val dd = ""
+
                 }
             }
 
