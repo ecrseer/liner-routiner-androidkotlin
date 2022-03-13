@@ -148,6 +148,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         setupViewPagerComSeekbar()
         escutarSwitchRotinaTemporaria()
         deletaRotinaSeTemporaria()
+        binding.seekBar.progress =0
     }
 
     private fun deletaRotinaSeTemporaria() {

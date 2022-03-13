@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_navigation"
     app:startDestination="@id/routineFragment">
+
     <fragment
         android:id="@+id/routineFragment"
         android:name="br.infnet.dk_tp1.ui.routines.RoutineFragment"
@@ -11,16 +12,19 @@
         tools:layout="@layout/fragment_routine_list" >
         <action
             android:id="@+id/action_routineFragment_to_mainFragment2"
-            app:destination="@id/mainFragment2" />
+            app:destination="@id/mainFragment2"
+             />
     </fragment>
     <fragment
         android:id="@+id/mainFragment2"
         android:name="br.infnet.dk_tp1.ui.main.MainFragment"
         android:label="main_fragment"
-        tools:layout="@layout/main_fragment" >
+        tools:layout="@layout/main_fragment"
+        >
         <action
             android:id="@+id/action_mainFragment2_to_routineFragment"
-            app:destination="@id/routineFragment" />
+            app:destination="@id/routineFragment"
+            />
         <argument
             android:name="position"
             app:argType="integer"

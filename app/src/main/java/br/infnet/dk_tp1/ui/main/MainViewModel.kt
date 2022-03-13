@@ -55,15 +55,17 @@ class MainViewModel
         viewModelScope.launch {
             val stream = FileOutputStream(arquivo)
             var rotinaTxt = "exemplo"
-            horarioAndTarefas.value?.forEach {
-                val temTarefa = it.tarefa
+            horarios2.value?.forEach {
+                val userTasks = it.userTasks
                 rotinaTxt += """
                     -------------------\n
-                    Horario ${it.horario.inicio}:00 as ${it.horario.fim}:00 
+                    Horario ${it.inicio}:00 as ${it.fim}:00 
                     
                 """.trimIndent()
-                temTarefa?.let { tarefa ->
-                    rotinaTxt += "${tarefa.nome}, ${tarefa.descricao}\n"
+                if (userTasks != null) {
+                    for (task in userTasks){
+                        rotinaTxt += "${task} \n"
+                    }
                 }
             }
             stream.write(rotinaTxt.toByteArray())
