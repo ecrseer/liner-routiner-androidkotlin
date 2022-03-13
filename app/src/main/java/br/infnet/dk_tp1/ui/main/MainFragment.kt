@@ -124,6 +124,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.loadFsData()
         binding.btnGravar.setOnClickListener {
             val arquivo = File(
                 requireContext()
@@ -143,7 +144,6 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
             }
         })
-        viewModel.loadFsData()
 
         setupViewPagerComSeekbar()
         escutarSwitchRotinaTemporaria()
@@ -166,20 +166,14 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 ) {
                     binding.viewpgr.currentItem = progress
                 }
-
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                    //TODO("Not yet implemented")
-                }
-
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                    //TODO("Not yet implemented")
-                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 
             })
         }
 
         with(binding.viewpgr as ViewPager2) {
-            viewModel.tarefas.observe(viewLifecycleOwner, Observer {
+            viewModel.horarios2.observe(viewLifecycleOwner, Observer {
                 it?.size?.let {
                     adapter = SliderAdapter(childFragmentManager, lifecycle, it)
                     binding.seekBar.max = it - 1
@@ -198,11 +192,11 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     }
 
     private fun sincronizaHorarioTxt(position: Int) {
-        viewModel.horarioAndTarefas?.value?.let {
+        viewModel.horarios2?.value?.let {
             if (it?.size > 0) {
                 it.get(position)?.let {
-                    val horaInicio = "${it.horario.inicio}:00"
-                    val horaFim = "${it.horario.fim}:00"
+                    val horaInicio = "${it.inicio}:00"
+                    val horaFim = "${it.fim}:00"
 
                     binding.horaSelecionada.setText(horaInicio)
                     binding.txtHoraFim.setText(horaFim)
@@ -213,7 +207,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
     override fun onResume() {
         super.onResume()
-        viewModel.horarioAndTarefas.observe(viewLifecycleOwner, Observer {
+        viewModel.horarios2.observe(viewLifecycleOwner, Observer {
             sincronizaHorarioTxt(0)
         })
 
@@ -226,9 +220,6 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         super.onCreateView(inflater, container, savedInstanceState)
         _binding = MainFragmentBinding.inflate(inflater, container, false)
 
-        viewModel.horarios.observe(viewLifecycleOwner, Observer {
-
-        })
 
         val viw = binding.root
         return viw

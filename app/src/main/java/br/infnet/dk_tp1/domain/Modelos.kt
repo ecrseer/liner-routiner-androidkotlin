@@ -23,7 +23,8 @@ data class Horario(
     val idHorario: Long? = null,
     val inicio: Int? = null,
     val fim: Int? = null,
-    val routineId: Long? = null
+    val routineId: Long? = null,
+    val userTasks:List<String>?=null,
 )
 
 data class RoutineWithHorario(

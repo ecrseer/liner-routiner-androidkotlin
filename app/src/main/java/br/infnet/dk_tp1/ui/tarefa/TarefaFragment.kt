@@ -5,18 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import br.infnet.dk_tp1.LinerRoutinerApplication
-import br.infnet.dk_tp1.R
-import br.infnet.dk_tp1.databinding.MainFragmentBinding
 import br.infnet.dk_tp1.databinding.TarefaFragmentBinding
-import br.infnet.dk_tp1.service.HorarioAndTarefaRepository
 import br.infnet.dk_tp1.service.TarefaRepository
-import br.infnet.dk_tp1.ui.main.MainFragment
 import br.infnet.dk_tp1.ui.main.MainViewModel
 
 class TarefaFragment : Fragment() {
@@ -30,6 +25,9 @@ class TarefaFragment : Fragment() {
     private var _binding: TarefaFragmentBinding? = null
     private val binding get()= _binding!!
 
+    private val mainViewModel by viewModels<MainViewModel>({requireParentFragment()})
+
+    private lateinit var  userTasksViewModel: UserTasksViewModel
     private lateinit var  viewModel: TarefaViewModel /*by viewModels { TarefaViewModelFactory(
         (requireActivity().application as LinerRoutinerApplication).tarefaRepository,0
     ) }*/
@@ -68,32 +66,40 @@ class TarefaFragment : Fragment() {
     private fun setupViewModel(){
         arguments?.let {
             posicao = it.getInt("posicaoTarefa").toLong()
+
             val linerApp = requireActivity().application as LinerRoutinerApplication
             val supostoId:Long = posicao+1
+
             val factory = TarefaViewModelFactory(linerApp.tarefaRepository,supostoId)
             viewModel = ViewModelProvider(this,factory).get(TarefaViewModel::class.java)
+
+            mainViewModel.horarios2.value?.let{horarios->
+                val ufactory = UserTasksViewModelFactory(horarios,supostoId)
+                userTasksViewModel = ViewModelProvider(this,ufactory)
+                    .get(UserTasksViewModel::class.java)
+            }
+
 
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.microTarefas.observe(viewLifecycleOwner, Observer {
+        userTasksViewModel.userTasks.observe(viewLifecycleOwner, Observer {
             it?.let{
                 with (binding.recyclerTodos){
-                    adapter = MicroTarefasRecyclerViewAdapter(it,{nmber->nmber})
+                    adapter = MicroTarefasRecyclerViewAdapter(it) { nmber -> nmber }
                 }
             }
         })
 
         binding.fabSalvarTarefa.setOnClickListener {
             binding.txtTitulo?.text?.toString()?.let{
-
                 viewModel.editarTarefa(it)
             }
         }
         binding.fabAdicionaTodo.setOnClickListener{
-            viewModel.adicionarMicrotarefa()
+            userTasksViewModel.addUserTask()
         }
 
     }

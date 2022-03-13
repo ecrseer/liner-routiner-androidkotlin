@@ -32,7 +32,7 @@ class MainViewModel
         .collection("users").document(userId)
         .collection("routines").document(routineId)
 
-    val tarefas2 = MutableLiveData<List<Tarefa>>()
+    val userTasks = MutableLiveData<List<String>>()
     val horarios2 = MutableLiveData<List<Horario>> ()
 
     val horarioAndTarefas2 = MutableLiveData<List<HorarioAndTarefa>>()
@@ -47,16 +47,8 @@ class MainViewModel
                 .addOnSuccessListener {snapshot->
                 val list = snapshot.toObjects<Horario>()
                 horarios2.postValue(list)
-            }
-        }
-        if(tarefas2.value.isNullOrEmpty() ){
-            routine.collection("tarefas")
-                .orderBy("idTarefa",asc).get()
-                .addOnSuccessListener {snapshot->
-                    val list = snapshot.toObjects<Tarefa>()
-                    tarefas2.postValue(list)
-                }
 
+            }
         }
     }
 

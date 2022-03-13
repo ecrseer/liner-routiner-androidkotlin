@@ -57,9 +57,6 @@ class RoutineFragment : Fragment() {
             binding.fabCreateroutine.setOnClickListener {
                 addRoutine()
             }
-            lastRoutineIdAdded.observe(viewLifecycleOwner, Observer {
-
-            })
             lastRoutineAdded.observe(viewLifecycleOwner, Observer {routine->
                 routine?.let{
                     activityViewModel.mUserLiveData.value?.let {user->

@@ -46,7 +46,7 @@ class RoutineViewModel
             val task = async { repository.inserirRoutine(routine) }
             val idRoutine = task.await()
             routine.idRoutine = idRoutine
-            lastRoutineIdAdded.postValue(idRoutine)
+            //deprecated lastRoutineIdAdded.postValue(idRoutine)
             lastRoutineAdded.postValue(routine)
         }
     }
@@ -62,7 +62,7 @@ class RoutineViewModel
             task.addOnSuccessListener {
                     addedroutine->
                 addedroutine.get().addOnSuccessListener {
-                    val routine =   it.toObject(Routine::class.java)
+                    val routine = it.toObject(Routine::class.java)
                     viewModelScope.launch {
                         if (routine != null) {
                             repository.modificarRoutine(routine)
@@ -81,10 +81,13 @@ class RoutineViewModel
             if (routine != null) {
 
                 val horarios = routine.collection("horarios")
-                for(horario in PopulateDatabase.CONST_HORARIOS){
+                lastRoutineAdded.value?.let{routine->
+                val constHorarios = PopulateDatabase.CONST_HORARIOS_WITH_USERTASKS(routine.idRoutine!!)
+                for(horario in constHorarios){
                     horarios.add(horario)
                 }
-                createRoutineTarefas(routine,routines)
+
+                }
             }
         }
 

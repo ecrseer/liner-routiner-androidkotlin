@@ -9,11 +9,11 @@ import br.infnet.dk_tp1.databinding.MicrotarefaItemFragmentBinding
 import br.infnet.dk_tp1.domain.MicroTarefa
 
 class MicroTarefasRecyclerViewAdapter(
-    private var listaMicrotarefas: List<MicroTarefa>,
+    private var listaMicrotarefas: List<String>,
     val funcaoParaClic:(Int)->Unit
 ) : RecyclerView.Adapter<MicroTarefasRecyclerViewAdapter.ViewHolder>() {
 
-    fun mudarLista(novaListaMicrotarefas: List<MicroTarefa>){
+    fun mudarLista(novaListaMicrotarefas: List<String>){
         listaMicrotarefas = novaListaMicrotarefas
         notifyDataSetChanged()
     }
@@ -34,7 +34,7 @@ class MicroTarefasRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = listaMicrotarefas[position]
-        holder.descricao.setText( item.descricao)
+        holder.descricao.setText( item)
 
     }
 
