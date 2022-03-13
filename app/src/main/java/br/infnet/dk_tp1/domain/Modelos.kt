@@ -40,30 +40,3 @@ data class RoutineWithHorario(
     var horarios: List<Horario>
 )
 
-@Entity
-data class Tarefa(
-    @PrimaryKey(autoGenerate = true)
-    val idTarefa: Long? = null,
-    val nome: String? = null,
-    val descricao: String? = null,
-    @NonNull
-    val horarioId: Long? = null,
-) {
-    fun cloneComIdDiferente(horaIdNovo: Long): Tarefa {
-        return Tarefa(this.idTarefa, this.nome, this.descricao, horaIdNovo)
-    }
-}
-
-data class HorarioAndTarefa(
-    @Embedded
-    val horario: Horario,
-    //@Relation(parentColumn = "idHorario",entityColumn = "horarioId")
-    @Embedded
-    val tarefa: Tarefa
-
-)
-
-data class MicroTarefa(
-    val idMicroTarefa: Long,
-    val descricao: String
-)

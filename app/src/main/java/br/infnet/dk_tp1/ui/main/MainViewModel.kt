@@ -2,9 +2,7 @@ package br.infnet.dk_tp1.ui.main
 
 import androidx.lifecycle.*
 import br.infnet.dk_tp1.domain.Horario
-import br.infnet.dk_tp1.domain.HorarioAndTarefa
-import br.infnet.dk_tp1.domain.Tarefa
-import br.infnet.dk_tp1.service.HorarioAndTarefaRepository
+import br.infnet.dk_tp1.service.RoutineRepository
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObjects
@@ -15,27 +13,20 @@ import java.io.FileOutputStream
 
 class MainViewModel
     (
-    private val horarioAndTarefaRepository: HorarioAndTarefaRepository,
+    private val routineRepository: RoutineRepository,
     userId: String,
     routineId: String
 ) : ViewModel() {
     // TODO: Implement the ViewModel
 
-    val tarefas =
-        horarioAndTarefaRepository.getAllTarefasLiveData().asLiveData()
     val horarios: LiveData<List<Horario>> =
-        horarioAndTarefaRepository.getAllHorariosLiveData().asLiveData()
-    val horarioAndTarefas: LiveData<List<HorarioAndTarefa>> =
-        horarioAndTarefaRepository.getTodosHorariosAndTarefasLiveData().asLiveData()
+        routineRepository.getAllHorariosLiveData().asLiveData()
 
    val routine = Firebase.firestore
         .collection("users").document(userId)
         .collection("routines").document(routineId)
 
     val horarios2 = MutableLiveData<List<Horario>> ()
-
-    val horarioAndTarefas2 = MutableLiveData<List<HorarioAndTarefa>>()
-        //horarioAndTarefaRepository.getTodosHorariosAndTarefasLiveData().asLiveData()
 
 
     fun loadFsData(){
@@ -75,21 +66,21 @@ class MainViewModel
     }
 
     fun encontraHorarioPorTarefaId(tarefaId: Long): Horario? {
-        horarioAndTarefas?.value?.let {
+        /*horarioAndTarefas?.value?.let {
             for (horarioEtarefa in horarioAndTarefas.value!!) {
                 if (horarioEtarefa.tarefa.idTarefa == tarefaId)
                     return horarioEtarefa.horario
             }
-        }
+        }*/
         return null
     }
 
     fun limparTarefa(idTarefa: Long) {
-        viewModelScope.launch {
+       /* viewModelScope.launch {
             val horario = encontraHorarioPorTarefaId(idTarefa)!!
             val tarefaLimpa = Tarefa(idTarefa, "", "", horario.idHorario)
-            horarioAndTarefaRepository.limparTarefa(tarefaLimpa)
-        }
+            routineRepository.limparTarefa(tarefaLimpa)
+        }*/
     }
 
     val userTasks = MutableLiveData<MutableList<String>>()
@@ -99,7 +90,7 @@ class MainViewModel
         val horario = horarios2.value?.get(horarioPosition.toInt())
         horario?.let { horarioInDb ->
             horarioInDb.userTasks = newUserTasks
-            viewModelScope.launch { horarioAndTarefaRepository.modificarHorario(horarioInDb) }
+            viewModelScope.launch { routineRepository.modificarHorario(horarioInDb) }
             horarioInDb.firestoreIdHorario?.let { idHorarioFs ->
                 routine.collection("horarios")
                 .document(idHorarioFs).set(horarioInDb)

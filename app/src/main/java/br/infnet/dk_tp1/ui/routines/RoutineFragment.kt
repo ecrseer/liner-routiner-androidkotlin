@@ -32,22 +32,22 @@ class RoutineFragment : Fragment() {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
     }
+    private fun createViewModelByUserId(){
+        val linerApp = requireActivity().application as LinerRoutinerApplication
+        activityViewModel.mUserLiveData.value?.let{user->
+            val factory = RoutineViewModelFactory(linerApp.routineRepository,user.uid)
+            viewModel = ViewModelProvider(this, factory).get(RoutineViewModel::class.java)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_routine_list, container, false)
-
-
-        val linerApp = requireActivity().application as LinerRoutinerApplication
-        val factory = RouteViewModelFactory(linerApp.horarioAndTarefaRepository)
-        viewModel = ViewModelProvider(this, factory).get(RoutineViewModel::class.java)
-
+        createViewModelByUserId()
         binding = FragmentRoutineListBinding.inflate(inflater, container, false)
         return binding.root
-
-        //return inflater.inflate(R.layout.fragment_loggedin, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

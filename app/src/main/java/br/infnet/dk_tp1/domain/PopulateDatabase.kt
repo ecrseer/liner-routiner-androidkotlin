@@ -22,29 +22,6 @@ object PopulateDatabase {
         Horario(16, 21, 22),
         Horario(17, 22, 23),
         Horario(18, 23, 24)        )
-    val CONST_TAREFAS = listOf(
-        Tarefa(1, "", "", 1),
-        Tarefa(2, "", "", 2),
-        Tarefa(3, "", "", 3),
-        Tarefa(4, "", "", 4),
-        Tarefa(5, "", "", 5),
-        Tarefa(6, "", "", 6),
-
-        Tarefa(7, "", "", 7),
-        Tarefa(8, "", "", 8),
-        Tarefa(9, "", "", 9),
-        Tarefa(10, "", "", 10),
-        Tarefa(11, "", "", 11),
-        Tarefa(12, "", "", 12),
-
-        Tarefa(13, "", "", 13),
-        Tarefa(14, "", "", 14),
-        Tarefa(15, "", "", 15),
-        Tarefa(16, "", "", 16),
-        Tarefa(17, "", "", 17),
-        Tarefa(18, "", "", 18),
-
-        )
       val CONST_HORARIOS_WITH_USERTASKS = { routineId:Long->
           val emptyUserTasks = mutableListOf("")
           listOf(

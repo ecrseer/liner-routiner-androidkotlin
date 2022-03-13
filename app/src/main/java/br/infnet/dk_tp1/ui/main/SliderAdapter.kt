@@ -3,10 +3,9 @@ package br.infnet.dk_tp1.ui.main
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import br.infnet.dk_tp1.ui.tarefa.TarefaFragment
+import br.infnet.dk_tp1.ui.tarefa.UserTasksFragment
 
 
 class SliderAdapter(
@@ -34,7 +33,7 @@ class SliderAdapter(
     }
 
     private fun tarefaPelaPosicao(position: Int): Fragment {
-        val frag = TarefaFragment()
+        val frag = UserTasksFragment()
         frag.arguments = bundleOf("posicaoTarefa" to position)
         return frag;
     }

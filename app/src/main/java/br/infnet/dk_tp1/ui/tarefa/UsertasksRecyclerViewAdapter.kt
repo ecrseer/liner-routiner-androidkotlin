@@ -5,47 +5,44 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import br.infnet.dk_tp1.databinding.MicrotarefaItemFragmentBinding
-import br.infnet.dk_tp1.domain.MicroTarefa
-import br.infnet.dk_tp1.ui.login.afterTextChanged
+import br.infnet.dk_tp1.databinding.UsertasksItemFragmentBinding
 
-class MicroTarefasRecyclerViewAdapter(
-    private var listaMicrotarefas: List<String>,
+class UsertasksRecyclerViewAdapter(
+    private var usertasksList: List<String>,
     val funcaoParaClic:(Int,String)->Unit
-) : RecyclerView.Adapter<MicroTarefasRecyclerViewAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<UsertasksRecyclerViewAdapter.ViewHolder>() {
 
-    fun mudarLista(novaListaMicrotarefas: List<String>) {
-        listaMicrotarefas = novaListaMicrotarefas
+    fun mudarLista(newUsertasksList: List<String>) {
+        usertasksList = newUsertasksList
         notifyDataSetChanged()
     }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val minhaBindingView = MicrotarefaItemFragmentBinding.inflate(
+        val minhaBindingView = UsertasksItemFragmentBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
 
-        val microtarefaViewHolder = ViewHolder(minhaBindingView, funcaoParaClic)
+        val usertasksViewHolder = ViewHolder(minhaBindingView, funcaoParaClic)
 
-        return microtarefaViewHolder
+        return usertasksViewHolder
 
     }
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = listaMicrotarefas[position]
+        val item = usertasksList[position]
         holder.descricao.setText(item)
 
     }
 
-    override fun getItemCount(): Int = listaMicrotarefas.size
+    override fun getItemCount(): Int = usertasksList.size
 
     inner class ViewHolder(
-        binding: MicrotarefaItemFragmentBinding,
+        binding: UsertasksItemFragmentBinding,
         funcaoDeClic: (Int, String) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         val descricao: EditText = binding.microtarefaDescricao

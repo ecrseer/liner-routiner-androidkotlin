@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import br.infnet.dk_tp1.LinerRoutinerApplication
 import br.infnet.dk_tp1.databinding.MainFragmentBinding
-import br.infnet.dk_tp1.service.HorarioAndTarefaRepository
+import br.infnet.dk_tp1.service.RoutineRepository
 import br.infnet.dk_tp1.ui.MainActivityViewModel
 import br.infnet.dk_tp1.ui.dialogs.MeuDatePickerDialog
 import com.google.android.material.snackbar.Snackbar
@@ -63,7 +63,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     val activityViewModel: MainActivityViewModel by activityViewModels()
 
     inner class MainViewModelFactory(
-        private val repository: HorarioAndTarefaRepository,
+        private val repository: RoutineRepository,
         private val userId: String,
         private val routineId: String
     ) :
@@ -81,7 +81,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val app = requireActivity().application as LinerRoutinerApplication
 
         MainViewModelFactory(
-            app.horarioAndTarefaRepository,
+            app.routineRepository,
             activityViewModel.mUserLiveData.value!!.uid,
             args.routineId
         )

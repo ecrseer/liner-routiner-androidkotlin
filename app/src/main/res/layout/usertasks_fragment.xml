@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#8FECDBDB"
-    tools:context=".ui.tarefa.TarefaFragment">
+    tools:context=".ui.tarefa.UserTasksFragment">
 
     <EditText
         android:id="@+id/txt_titulo"
@@ -25,7 +25,7 @@
         app:layoutManager="LinearLayoutManager"
 
 
-        tools:listitem="@layout/microtarefa_item_fragment"
+        tools:listitem="@layout/usertasks_item_fragment"
         app:layout_constraintEnd_toStartOf="@+id/fab_salvar_tarefa"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_titulo" />

@@ -3,7 +3,7 @@ package br.infnet.dk_tp1.ui.routines
 import androidx.lifecycle.*
 import br.infnet.dk_tp1.domain.PopulateDatabase
 import br.infnet.dk_tp1.domain.Routine
-import br.infnet.dk_tp1.service.HorarioAndTarefaRepository
+import br.infnet.dk_tp1.service.RoutineRepository
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
@@ -12,31 +12,23 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.*
 
-class RouteViewModelFactory(private val repository: HorarioAndTarefaRepository) :
+class RoutineViewModelFactory(private val repository: RoutineRepository,
+                              private val userId: String) :
     ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RoutineViewModel::class.java)) {
-            return RoutineViewModel(repository) as T;
+            return RoutineViewModel(repository,userId) as T;
         }
         throw IllegalArgumentException(" LoggedinViewModel instanciando errado")
     }
 }
 
 class RoutineViewModel
-    (private val repository: HorarioAndTarefaRepository) : ViewModel() {
+    (private val repository: RoutineRepository,private val userId: String) : ViewModel() {
 
 
-    //tarefa.postValue(tarefaRepository.getTarefaById(idTarefa))
-    val status = MutableLiveData<String>().apply { value = "" }
-    val userRoutines = repository.getAllRoutineLiveData().asLiveData()
-    val userRoutine = MutableLiveData<MutableList<Routine>>(
-        mutableListOf(
-            Routine(1L, "FSDS2F"),
-            Routine(2L, "DFSDSF")
-        )
-    )
-    val lastRoutineIdAdded = MutableLiveData<Long>()
+    val userRoutines = repository.getAllRoutinesByUserIdFirestore(userId)
     val lastRoutineAdded = MutableLiveData<Routine>()
 
     fun addRoutine() {
@@ -46,7 +38,6 @@ class RoutineViewModel
             val task = async { repository.inserirRoutine(routine) }
             val idRoutine = task.await()
             routine.idRoutine = idRoutine
-            //deprecated lastRoutineIdAdded.postValue(idRoutine)
             lastRoutineAdded.postValue(routine)
         }
     }
@@ -92,15 +83,6 @@ class RoutineViewModel
         }
 
 
-    }
-    private fun createRoutineTarefas(routine: DocumentReference?, routines: CollectionReference) {
-        //viewmodelscope
-        if (routine != null) {
-            val tarefas = routine.collection("tarefas")
-            for(tarefa in PopulateDatabase.CONST_TAREFAS){
-                tarefas.add(tarefa)
-            }
-        }
     }
 
 }

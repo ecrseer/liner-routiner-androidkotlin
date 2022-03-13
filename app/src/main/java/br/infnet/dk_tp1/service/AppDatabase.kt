@@ -18,14 +18,12 @@ private val IO_EXECUTOR = Executors.newSingleThreadExecutor()
 fun ioThread(f : () -> Unit) {
     IO_EXECUTOR.execute(f)
 }
-@Database(entities = [Routine::class,Tarefa::class,Horario::class], version = 1, exportSchema = false)
+@Database(entities = [Routine::class,Horario::class], version = 1, exportSchema = false)
 @TypeConverters(DbConverters::class)
 abstract class AppDatabase : RoomDatabase(){
 
     abstract fun getRoutineDAO(): DaoRoutine
-    abstract fun getHorarioAndTarefaDAO(): DaoHorarioAndTarefa
     abstract fun getHorarioDAO(): DaoHorario
-    abstract fun getTarefaDAO(): DaoTarefa
 
     companion object {
         @Volatile
@@ -46,31 +44,6 @@ abstract class AppDatabase : RoomDatabase(){
                 return instance
 
             }
-        }
-        private class AppHorarioTarefaDatabaseCallback(
-            private val scope: CoroutineScope
-        ) : RoomDatabase.Callback() {
-
-            override fun onCreate(db: SupportSQLiteDatabase) {
-                super.onCreate(db)
-                INSTANCE?.let { database ->
-                    scope.launch(Dispatchers.IO) {
-                        populateDatabase(database.getHorarioDAO(),
-                            database.getTarefaDAO())
-                    }
-                }
-            }
-        }
-
-
-        suspend fun populateDatabase(horarioDAO: DaoHorario,tarefaDAO:DaoTarefa) {
-            for(horario in PopulateDatabase.CONST_HORARIOS){
-                horarioDAO.inserir(horario)
-            }
-            for(tarefa in PopulateDatabase.CONST_TAREFAS){
-                tarefaDAO.inserir(tarefa)
-            }
-
         }
     }
 
