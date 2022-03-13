@@ -34,6 +34,8 @@ interface DaoHorario {
 
     @Query("SELECT * FROM horario")
     fun listar(): Flow<List<Horario>>
+    @Update
+    suspend fun editar(horario: Horario):Int
 }
 
 @Dao

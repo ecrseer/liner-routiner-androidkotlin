@@ -164,6 +164,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                     progress: Int,
                     fromUser: Boolean
                 ) {
+                    println("progress $progress")
                     binding.viewpgr.currentItem = progress
                 }
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -175,6 +176,7 @@ class MainFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         with(binding.viewpgr as ViewPager2) {
             viewModel.horarios2.observe(viewLifecycleOwner, Observer {
                 it?.size?.let {
+                    println("size $it")
                     adapter = SliderAdapter(childFragmentManager, lifecycle, it)
                     binding.seekBar.max = it - 1
                 }

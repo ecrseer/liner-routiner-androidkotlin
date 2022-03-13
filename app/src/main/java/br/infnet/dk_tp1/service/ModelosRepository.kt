@@ -43,9 +43,16 @@ class HorarioAndTarefaRepository(
     suspend fun inserirHorario(horario:Horario): Long {
         return daoHorario.inserir(horario)
     }
+
+    suspend fun modificarHorario(horario: Horario): Int {
+        return daoHorario.editar(horario)
+    }
+
     suspend fun inserirTarefa(tarefa:Tarefa):Long{
         return daoTarefa.inserir(tarefa)
     }
+
+
 
     suspend fun criaHorarioAndTarefa(horario:Horario, tarefaSemIds: Tarefa): Long {
         val idHorario = inserirHorario(horario)
@@ -66,6 +73,7 @@ class HorarioAndTarefaRepository(
         val tarefaLimpa = Tarefa(tarefa.idTarefa,"","",tarefa.horarioId)
         return daoTarefa.editar(tarefaLimpa)
     }
+
 
 }
 

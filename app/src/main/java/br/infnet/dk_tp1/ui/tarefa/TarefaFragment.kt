@@ -74,7 +74,7 @@ class TarefaFragment : Fragment() {
             viewModel = ViewModelProvider(this,factory).get(TarefaViewModel::class.java)
 
             mainViewModel.horarios2.value?.let{horarios->
-                val ufactory = UserTasksViewModelFactory(horarios,supostoId)
+                val ufactory = UserTasksViewModelFactory(horarios,posicao)
                 userTasksViewModel = ViewModelProvider(this,ufactory)
                     .get(UserTasksViewModel::class.java)
             }
@@ -88,15 +88,17 @@ class TarefaFragment : Fragment() {
         userTasksViewModel.userTasks.observe(viewLifecycleOwner, Observer {
             it?.let{
                 with (binding.recyclerTodos){
-                    adapter = MicroTarefasRecyclerViewAdapter(it) { nmber -> nmber }
+                    adapter = MicroTarefasRecyclerViewAdapter(it) { posicao,newText ->
+                        userTasksViewModel.modifyUserTaskByPosition(posicao,newText)
+                    }
                 }
             }
         })
 
         binding.fabSalvarTarefa.setOnClickListener {
-            binding.txtTitulo?.text?.toString()?.let{
-                viewModel.editarTarefa(it)
-            }
+            val userTasks = userTasksViewModel.userTasks.value
+            val posicaoHorario:Long = posicao
+            mainViewModel.editarHorario(userTasks,posicaoHorario)
         }
         binding.fabAdicionaTodo.setOnClickListener{
             userTasksViewModel.addUserTask()

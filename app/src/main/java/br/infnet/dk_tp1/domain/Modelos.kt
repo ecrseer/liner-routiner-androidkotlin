@@ -24,7 +24,9 @@ data class Horario(
     val inicio: Int? = null,
     val fim: Int? = null,
     val routineId: Long? = null,
-    val userTasks:List<String>?=null,
+    var userTasks:List<String>?=null,
+    @DocumentId
+    val firestoreIdHorario:String?=null
 )
 
 data class RoutineWithHorario(

@@ -32,7 +32,6 @@ class MainViewModel
         .collection("users").document(userId)
         .collection("routines").document(routineId)
 
-    val userTasks = MutableLiveData<List<String>>()
     val horarios2 = MutableLiveData<List<Horario>> ()
 
     val horarioAndTarefas2 = MutableLiveData<List<HorarioAndTarefa>>()
@@ -88,6 +87,22 @@ class MainViewModel
             val horario = encontraHorarioPorTarefaId(idTarefa)!!
             val tarefaLimpa = Tarefa(idTarefa, "", "", horario.idHorario)
             horarioAndTarefaRepository.limparTarefa(tarefaLimpa)
+        }
+    }
+
+    val userTasks = MutableLiveData<MutableList<String>>()
+
+
+    fun editarHorario(newUserTasks: MutableList<String>?, horarioPosition:Long) {
+        val horario = horarios2.value?.get(horarioPosition.toInt())
+        horario?.let { horarioInDb ->
+            horarioInDb.userTasks = newUserTasks
+            viewModelScope.launch { horarioAndTarefaRepository.modificarHorario(horarioInDb) }
+            horarioInDb.firestoreIdHorario?.let { idHorarioFs ->
+                routine.collection("horarios")
+                .document(idHorarioFs).set(horarioInDb)
+            }
+
         }
     }
 

@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import br.infnet.dk_tp1.domain.Horario
-import br.infnet.dk_tp1.domain.Tarefa
 
 class UserTasksViewModelFactory(
     private val horarios: List<Horario>,
@@ -21,12 +20,6 @@ class UserTasksViewModelFactory(
 
 class UserTasksViewModel(private val horarios: List<Horario>, private val idUserTask: Long) :
     ViewModel() {
-    // TODO: Implement the ViewModel
-
-    var tarefa = MutableLiveData<MutableList<Tarefa>>()
-
-    //tarefa.postValue(tarefaRepository.getTarefaById(idUserTask))
-    val status = MutableLiveData<String>().apply { value = "" }
 
     val userTasks = MutableLiveData<MutableList<String>>()
 
@@ -44,15 +37,16 @@ class UserTasksViewModel(private val horarios: List<Horario>, private val idUser
         userTasks.postValue(clone!!)
     }
 
-    fun editarTarefa(novoTitulo: String) {
-        /*tarefa.value?.let{
-            var clone = Tarefa(it.idUserTask,novoTitulo,it.descricao,it.horarioId)
-
-            viewModelScope.launch {
-                val idMod = tarefaRepository.modificarTarefa(clone)
-                val d = idMod
+    fun modifyUserTaskByPosition(posicao: Int, newUserTaskText: String) {
+        val clone = userTasks.value
+        clone?.let { userTask ->
+            val oldTask = userTask.get(posicao)
+            if (!oldTask.equals(newUserTaskText)) {
+                clone?.set(posicao, newUserTaskText)
+                //userTasks.postValue(clone!!)
             }
-        }*/
+        }
     }
+
 
 }
