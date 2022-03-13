@@ -33,11 +33,7 @@ class RoutineViewModel
 
     fun addRoutine() {
         viewModelScope.launch {
-            val now = Calendar.getInstance().timeInMillis
-            val routine = Routine(null, "$now", listOf(""))
-            val task = async { repository.inserirRoutine(routine) }
-            val idRoutine = task.await()
-            routine.idRoutine = idRoutine
+            val routine = repository.createRoutine()
             lastRoutineAdded.postValue(routine)
         }
     }

@@ -6,7 +6,10 @@ import br.infnet.dk_tp1.domain.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObjects
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import org.jetbrains.anko.custom.async
+import java.util.*
 
 class RoutineRepository(
     private val daoRoutine:DaoRoutine,
@@ -22,6 +25,14 @@ class RoutineRepository(
                 routinesLiveData.postValue(stored.toMutableList())
             }
             return routinesLiveData
+        }
+
+        suspend fun createRoutine(): Routine {
+            val now = Calendar.getInstance().timeInMillis
+            val routine = Routine(null, "$now", listOf(""))
+            val idRoutine =  inserirRoutine(routine)
+            routine.idRoutine = idRoutine
+            return routine
         }
 
         suspend fun getAllRoutines(): List<RoutineWithHorario> {
