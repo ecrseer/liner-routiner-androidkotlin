@@ -12,7 +12,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class MainActivityViewModel : ViewModel() {
-    var mAuth: FirebaseAuth? = null
+    var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
     val mUserLiveData = MutableLiveData<FirebaseUser?>().apply { value = null }
 
@@ -30,8 +30,8 @@ class MainActivityViewModel : ViewModel() {
     val firestoreUser = MutableLiveData<MyFirestoreUser>()
 
     init {
-        mAuth = FirebaseAuth.getInstance()
-        mAuth?.let {
+
+        mAuth.let {
             mUserLiveData.postValue(it.currentUser)
         }
     }

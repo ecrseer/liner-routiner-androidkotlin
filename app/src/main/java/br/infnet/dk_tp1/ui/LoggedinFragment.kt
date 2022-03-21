@@ -8,7 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import br.infnet.dk_tp1.LinerRoutinerApplication
 import br.infnet.dk_tp1.R
@@ -41,6 +43,16 @@ class LoggedinFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
         }
     }
+    private fun setupBottombuttonsnav(view:View) {
+        binding.bottomNavigationView.setOnItemSelectedListener { menuitem ->
+            when(menuitem.itemId){
+                R.id.menuitem_logout -> activityViewModel.logout()
+                R.id.menuitem_back -> requireActivity()?.findNavController(R.id.loggedin_navhost)?.
+                    navigate(R.id.action_mainFragment2_to_routineFragment)
+            }
+
+             true}
+}
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +66,7 @@ class LoggedinFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        setupBottombuttonsnav(view)
     }
 
 
