@@ -7,6 +7,7 @@ import br.infnet.dk_tp1.service.RoutineRepository
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObjects
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -28,7 +29,18 @@ class RoutineViewModel
     (private val repository: RoutineRepository,private val userId: String) : ViewModel() {
 
 
-    val userRoutines = repository.getAllRoutinesByUserIdFirestore(userId)
+    var userRoutines = repository.getAllRoutinesByUserIdFirestore(userId)
+    init {
+        repository.setupRoutinesListener(userId){querySnap,listener->
+            val changes = querySnap?.documentChanges?.size
+            if(changes != null && changes>0){
+                val routines = querySnap.toObjects<Routine>()
+                routines?.let { rtines-> userRoutines.postValue(rtines.toMutableList()) }
+
+            }
+
+        }
+    }
     val lastRoutineAdded = MutableLiveData<Routine>()
 
     fun addRoutine() {

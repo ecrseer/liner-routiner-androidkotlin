@@ -47,8 +47,15 @@ class LoggedinFragment : Fragment() {
         binding.bottomNavigationView.setOnItemSelectedListener { menuitem ->
             when(menuitem.itemId){
                 R.id.menuitem_logout -> activityViewModel.logout()
-                R.id.menuitem_back -> requireActivity()?.findNavController(R.id.loggedin_navhost)?.
-                    navigate(R.id.action_mainFragment2_to_routineFragment)
+                R.id.menuitem_back -> {
+                    val navhost = requireActivity()
+                            ?.findNavController(R.id.loggedin_navhost)
+
+                    if(navhost.currentDestination?.id != null &&
+                        navhost.currentDestination?.id != R.id.routineFragment){
+                        navhost?.navigate(R.id.action_mainFragment2_to_routineFragment)
+                    }
+                }
             }
 
              true}
