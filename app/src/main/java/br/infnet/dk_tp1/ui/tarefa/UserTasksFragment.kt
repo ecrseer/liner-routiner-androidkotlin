@@ -113,6 +113,7 @@ class UserTasksFragment : Fragment() {
                     .into(binding.imageView3TempHolder,object : Callback{
                         override fun onSuccess() {
                             binding.recyclerTodos.setBackgroundDrawable(binding.imageView3TempHolder.getDrawable());
+                            binding.recyclerTodos.background.alpha = 21
                         }
 
                         override fun onError(e: Exception?) {}

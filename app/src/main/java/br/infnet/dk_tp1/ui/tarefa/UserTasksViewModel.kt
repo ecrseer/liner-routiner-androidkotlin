@@ -32,6 +32,9 @@ class UserTasksViewModel(private val horarios: List<Horario>, private val idUser
         mutableUtasks?.let {
             userTasks.postValue(it)
         }
+
+            service.setListener(this)
+
     }
 
     fun addUserTask() {
