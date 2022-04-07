@@ -7,6 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import br.infnet.dk_tp1.databinding.FragmentRoutineBinding
 import br.infnet.dk_tp1.domain.Routine
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -29,11 +31,15 @@ class MyRoutineRecyclerViewAdapter(
         return vw
 
     }
-
+    fun convertLongToTime(time: Long): String {
+        val date = Date(time)
+        val format = SimpleDateFormat("yyyy.MM.dd HH:mm")
+        return format.format(date)
+    }
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.idView.text = item.idRoutine.toString()
-        holder.contentView.text = item.name
+        //holder.idView.text = item.idRoutine.toString()
+        holder.contentView.text = convertLongToTime(item.name!!.toLong())
     }
 
     override fun getItemCount(): Int = values.size

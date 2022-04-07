@@ -4,6 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import br.infnet.dk_tp1.domain.Horario
+import br.infnet.dk_tp1.service.SearchImageService
+import br.infnet.dk_tp1.service.SearchImageServiceListener
+import br.infnet.dk_tp1.service.SearchedImageURL
 
 class UserTasksViewModelFactory(
     private val horarios: List<Horario>,
@@ -19,10 +22,10 @@ class UserTasksViewModelFactory(
 }
 
 class UserTasksViewModel(private val horarios: List<Horario>, private val idUserTask: Long) :
-    ViewModel() {
+    ViewModel(), SearchImageServiceListener {
 
     val userTasks = MutableLiveData<MutableList<String>>()
-
+    val service = SearchImageService()
     init {
         val utasks = horarios.get(idUserTask.toInt()).userTasks
         val mutableUtasks: MutableList<String>? = utasks?.toMutableList()
@@ -43,9 +46,22 @@ class UserTasksViewModel(private val horarios: List<Horario>, private val idUser
             val oldTask = userTask.get(posicao)
             if (!oldTask.equals(newUserTaskText)) {
                 clone?.set(posicao, newUserTaskText)
-                //userTasks.postValue(clone!!)
             }
         }
+    }
+
+    val userTaskBackgroundUrl = MutableLiveData<String>()
+    fun getContextImage(txt:String){
+        service.getImage(txt)
+    }
+
+    override fun whenGetImageFinished(imgurl: SearchedImageURL?) {
+        userTaskBackgroundUrl.value = "${imgurl?.big}"
+    }
+
+    override fun whenHttpError(erro: String) {
+        println(erro)
+        //TODO("Not yet implemented")
     }
 
 

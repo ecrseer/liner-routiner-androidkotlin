@@ -25,7 +25,7 @@ class SearchImageService{
     private lateinit var listenerImgService:SearchImageServiceListener
     init{
         val retr = Retrofit.Builder()
-            .baseUrl("https://notecompletion.herokuapp.com/")
+            .baseUrl("https://notecompletion.herokuapp.com")
             .addConverterFactory(GsonConverterFactory.create()).build()
 
         api = retr.create(SearchImageApi::class.java)

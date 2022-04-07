@@ -5,12 +5,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import br.infnet.dk_tp1.R
 import br.infnet.dk_tp1.databinding.FragmentLoginBinding
+import br.infnet.dk_tp1.ui.MainActivityViewModel
+import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginResult
+import com.google.firebase.auth.FacebookAuthProvider
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,10 +35,32 @@ class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
     private lateinit var facebookCallbackMan:CallbackManager
 
+    val activityViewModel: MainActivityViewModel by activityViewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
+        }
+    }
+    private fun handleFacebookAccessToken(token: AccessToken) {
+
+        val credential = FacebookAuthProvider.getCredential(token.token)
+        with(activityViewModel){
+
+        mAuth.signInWithCredential(credential)
+            .addOnCompleteListener(requireActivity()) { task ->
+                if (task.isSuccessful) {
+                    verifyCurrentUser()
+                    mUserLiveData.postValue(mAuth.currentUser)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    println("signInWithCredential:failure${task.exception}")
+                    Toast.makeText(requireContext(), "Authentication failed.",
+                        Toast.LENGTH_SHORT).show()
+
+                }
+            }
         }
     }
     private fun setupFacb(){
@@ -44,8 +71,7 @@ class LoginFragment : Fragment() {
                 object : FacebookCallback<LoginResult> {
 
                     override fun onSuccess(loginResult: LoginResult) {
-
-                        //handleFacebookAccessToken(loginResult.accessToken)
+                        handleFacebookAccessToken(loginResult.accessToken)
                     }
 
                     override fun onCancel() {

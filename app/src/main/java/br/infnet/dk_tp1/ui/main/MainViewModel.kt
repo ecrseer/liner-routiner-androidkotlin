@@ -86,9 +86,10 @@ class MainViewModel
     val userTasks = MutableLiveData<MutableList<String>>()
 
 
-    fun editarHorario(newUserTasks: MutableList<String>?, horarioPosition:Long) {
+    fun editarHorario(newUserTasks: MutableList<String>?, horarioPosition:Long, newtitle:String) {
         val horario = horarios2.value?.get(horarioPosition.toInt())
         horario?.let { horarioInDb ->
+            horarioInDb.title = newtitle
             horarioInDb.userTasks = newUserTasks
             viewModelScope.launch { routineRepository.modificarHorario(horarioInDb) }
             horarioInDb.firestoreIdHorario?.let { idHorarioFs ->

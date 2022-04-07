@@ -50,4 +50,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/imageView3_temp_holder"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/com_facebook_auth_dialog_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

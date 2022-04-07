@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import com.facebook.AccessToken
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.ktx.firestore
@@ -85,5 +87,6 @@ class MainActivityViewModel : ViewModel() {
         }
 
     }
+
 
 }
